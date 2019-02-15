@@ -2,9 +2,9 @@ bin/
 lib/
 build/
 
-src/*
-!src/pOdometry/*
-
+# not removed since CMakeFile.txt wants all folders
+#src/*
+#!src/pOdometry/*
 
 clean.sh
 .svn/
