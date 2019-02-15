@@ -4,7 +4,7 @@ ServerHost = localhost
 ServerPort = 9000
 Simulator  = true
 
-Community  = alder
+Community  = alder_lab4
 
 MOOSTimeWarp = 1
 
@@ -17,14 +17,14 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB		@ NewConsole = false
-  Run = uSimMarine	@ NewConsole = false
-  Run = pNodeReporter	@ NewConsole = false
-  Run = pMarinePID	@ NewConsole = false
-  Run = pMarineViewer	@ NewConsole = false
-  Run = uProcessWatch   @ NewConsole = false
-  Run = pHelmIvP	@ NewConsole = false
-  Run = pOdometry	@ NewConsole = false
+  Run = MOOSDB        @ NewConsole = false
+  Run = uSimMarine    @ NewConsole = false
+  Run = pNodeReporter @ NewConsole = false
+  Run = pMarinePID    @ NewConsole = false
+  Run = pMarineViewer @ NewConsole = false
+  Run = uProcessWatch @ NewConsole = false
+  Run = pHelmIvP      @ NewConsole = false
+  Run = pOdometry     @ NewConsole = false
 }
 
 //------------------------------------------
@@ -71,7 +71,7 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  Behaviors  = alder.bhv
+  Behaviors  = alder_lab4.bhv
   Verbose    = quiet
   Domain     = course:0:359:360
   Domain     = speed:0:4:21

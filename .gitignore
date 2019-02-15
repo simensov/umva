@@ -12,6 +12,7 @@ clean.sh
 missions/*
 !missions/alder/
 missions/alder/*
-!missions/alder/alder_lab4.*
+!missions/alder/alder_lab4.moos
+!missions/alder/alder_lab4.bhv
 
 scripts/
