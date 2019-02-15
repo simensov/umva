@@ -75,11 +75,9 @@ bool Odometry::OnNewMail(MOOSMSG_LIST &NewMail)
     if (key == "NAV_Y"){  
       m_current_y = msg.GetDouble();
       m_first_reading = false;
-
     }
 
   }
-
    return(true);
 }
 
