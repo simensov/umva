@@ -78,6 +78,8 @@ bool Odometry::OnNewMail(MOOSMSG_LIST &NewMail)
 
     }
 
+  }
+
    return(true);
 }
 
