@@ -3,7 +3,8 @@ lib/
 build/
 
 src/*
-!src/pOdometry/
+!src/pOdometry/*
+
 
 clean.sh
 .svn/
