@@ -1,0 +1,17 @@
+bin/
+lib/
+build/
+
+src/
+!src/pOdometry
+
+clean.sh
+.svn/
+
+# adding relevant mission files to git in deeper folders
+missions/*
+!missions/alder/
+missions/alder/*
+!missions/alder/alder_lab4.*
+
+scripts/
