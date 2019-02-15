@@ -2,8 +2,8 @@ bin/
 lib/
 build/
 
-src/
-!src/pOdometry
+#src/
+#!src/pOdometry
 
 clean.sh
 .svn/
