@@ -1,0 +1,52 @@
+//------------------------------------------------
+// pPrimeFactor config block
+
+ServerHost = localhost
+ServerPort = 9000
+Simulator  = true
+
+Community  = pPrimeFactor
+
+MOOSTimeWarp = 1
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB        @ NewConsole = false
+  Run = pPrimeFactor  @ NewConsole = false
+  Run = uTimerScript  @ NewConsole = false
+}
+
+ProcessConfig = pPrimeFactor
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  paused = false
+
+  event  = var=NUM_VALUE, val=11,  time=0.5 
+  event  = var=NUM_VALUE, val=25,  time=1.0
+  event  = var=NUM_VALUE, val=31,  time=1.5 
+  event  = var=NUM_VALUE, val=42,  time=2.0 
+  event  = var=NUM_VALUE, val=53,  time=2.5 
+  event  = var=NUM_VALUE, val=69,  time=3.0 
+  event  = var=NUM_VALUE, val=78,  time=3.5 
+  event  = var=NUM_VALUE, val=87,  time=4.0 
+  event  = var=NUM_VALUE, val=96,  time=4.5 
+  event  = var=NUM_VALUE, val=104, time=5:10 
+  
+
+  reset_max  = nolimit
+  reset_time = all-posted
+
+}
+
