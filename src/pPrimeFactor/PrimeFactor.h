@@ -9,6 +9,7 @@
 #define PrimeFactor_HEADER
 
 #include "MOOS/libMOOS/MOOSLib.h"
+#include <cstdint>
 
 class PrimeFactor : public CMOOSApp
 {
@@ -22,13 +23,18 @@ class PrimeFactor : public CMOOSApp
    bool OnConnectToServer();
    bool OnStartUp();
 
+   bool isPrime(uint64_t &integer);
+   std::list<uint64_t> primeCalculator(uint64_t &integer);
+
  protected:
    void RegisterVariables();
 
    bool m_first_reading;
-   int m_current_prime;
-   std::list<int> m_all_primes;
+   uint64_t m_previous_prime;
+   uint64_t m_current_prime;
+   std::list<uint64_t> m_primes;
    std::string m_prime_name;
+
 };
 
 #endif 

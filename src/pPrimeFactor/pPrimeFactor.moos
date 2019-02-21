@@ -33,17 +33,17 @@ ProcessConfig = uTimerScript
 
   paused = false
 
-  event  = var=NUM_VALUE, val=11,  time=0.5 
-  event  = var=NUM_VALUE, val=25,  time=1.0
-  event  = var=NUM_VALUE, val=31,  time=1.5 
-  event  = var=NUM_VALUE, val=42,  time=2.0 
-  event  = var=NUM_VALUE, val=53,  time=2.5 
-  event  = var=NUM_VALUE, val=69,  time=3.0 
-  event  = var=NUM_VALUE, val=78,  time=3.5 
-  event  = var=NUM_VALUE, val=87,  time=4.0 
-  event  = var=NUM_VALUE, val=96,  time=4.5 
-  event  = var=NUM_VALUE, val=104, time=5:10 
-  
+  event  = var=NUM_VALUE, val="11",  time=0.5 
+  event  = var=NUM_VALUE, val="25",  time=1.0
+  event  = var=NUM_VALUE, val="31",  time=1.5 
+  event  = var=NUM_VALUE, val="42",  time=2.0 
+  event  = var=NUM_VALUE, val="53",  time=2.5 
+  event  = var=NUM_VALUE, val="69",  time=3.0 
+  event  = var=NUM_VALUE, val="78",  time=3.5 
+  event  = var=NUM_VALUE, val="87",  time=4.0 
+  event  = var=NUM_VALUE, val="96",  time=4.5 
+  event  = var=NUM_VALUE, val="104", time=5.0
+  event  = var=NUM_VALUE, val="104", time=5.5
 
   reset_max  = nolimit
   reset_time = all-posted

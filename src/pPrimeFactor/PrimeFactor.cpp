@@ -17,8 +17,9 @@ using namespace std;
 PrimeFactor::PrimeFactor()
 {
   m_first_reading       = true;
+  m_previous_prime      = 0;
   m_current_prime       = 0;
-  m_all_primes          = {};
+  m_primes              = {};
   m_prime_name          = "NUM_RESULT";
 }
 
@@ -41,16 +42,13 @@ bool PrimeFactor::OnNewMail(MOOSMSG_LIST &NewMail)
 
     // Checks explicitly for variable name we are interested in
     if (key == "NUM_VALUE"){
-      m_current_prime = msg.GetDouble();
 
-      // Intermediate action: modulo returned 0 -> number is dividable by 2
-      if (m_current_prime % 2){
-        Notify("NUM_RESULT", "odd");
-      } 
-      else{
-        // 
-        Notify("NUM_RESULT","even");
-      }
+      string inString = msg.GetString();      // get value as string
+      m_current_prime = std::stoll(inString); // convert to long long
+
+      m_primes.push_front(m_current_prime);
+
+      // m_current_prime = msg.GetDouble(); // Used for the initial implementation when an int was posted, not a string
 
       m_first_reading = false;  // changes to false as soon we read a mail
     }
@@ -87,13 +85,31 @@ bool PrimeFactor::OnConnectToServer()
 
 bool PrimeFactor::Iterate()
 {
-
   // Test for prime number
-  // Put all the numbers that it is divisable on in vector
-  // 
+  if (!m_first_reading){
+
+    while(m_primes.size()){
+
+      uint64_t last_element = m_primes.back();
+
+      // Test for prime number
+      if (last_element % 2){
+        Notify("NUM_RESULT",to_string(last_element) + ",odd");
+      } 
+      else{
+        Notify("NUM_RESULT",to_string(last_element) + ",even");
+      }
+
+      // remove element to reduce list size
+      m_primes.pop_back();
 
 
-  //Notify("Name of variable: NUM_VALUE", m_current_prime)
+
+    } // while
+
+
+  }
+
   return(true);
 }
 
@@ -132,3 +148,43 @@ void PrimeFactor::RegisterVariables()
   Register("NUM_RESULT", 0); 
 }
 
+
+//---------------------------------------------------------
+// Procedure: isPrime
+// Purpose:   checks if an integer is a prime number or not
+// @ params   integer to test
+// @ return   true or false
+bool PrimeFactor::isPrime(uint64_t &integer){
+  return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: primeCalculator
+// Purpose:   takes an integer, tests if it is a prime, and returns all the primes the integer consists of
+// @ params   integer to test
+// @ return   a list of primes of the input integer
+std::list<uint64_t> PrimeFactor::primeCalculator(uint64_t &integer){
+
+  if (!isPrime(integer)){
+    std::list<uint64_t> primeList = {};
+
+    /*
+        TODODTODTODTODTO
+    */
+    // Do prime calculations here (modulo?) etc
+
+
+    // To view result, notify the list as string of all elements
+    string stringList = "";
+    list<uint64_t>::iterator it;
+    for(it = primeList.begin(); it != primeList.end(); ++it){
+      stringList = stringList + to_string(*it) + ", ";
+    }
+
+    Notify("NUM_LIST",stringList);
+
+
+  }
+
+
+}
