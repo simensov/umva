@@ -180,7 +180,7 @@ void Odometry::RegisterVariables()
 
   // Explicitly register for the MOOS-variables we want
   Register("NAV_X", 0); // second parameter == 0 as we would like every update from NAV_X
-  Register("NAV_y", 0);
+  Register("NAV_Y", 0);
 
 }
 
