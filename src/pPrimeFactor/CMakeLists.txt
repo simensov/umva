@@ -6,6 +6,7 @@
 SET(SRC
   PrimeFactor.cpp
   PrimeFactor_Info.cpp
+  PrimeEntry.cpp
   main.cpp
 )
 
