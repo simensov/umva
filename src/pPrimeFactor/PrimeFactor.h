@@ -10,6 +10,7 @@
 
 #include "MOOS/libMOOS/MOOSLib.h"
 #include <cstdint>
+#include <list>
 
 class PrimeFactor : public CMOOSApp
 {
@@ -23,17 +24,18 @@ class PrimeFactor : public CMOOSApp
    bool OnConnectToServer();
    bool OnStartUp();
 
-   bool isPrime(uint64_t &integer);
-   std::list<uint64_t> primeCalculator(uint64_t &integer);
+   void setPrimeFactors(uint64_t &integer);
+   std::string getPrimesAsString() const;
+
 
  protected:
    void RegisterVariables();
 
-   bool m_first_reading;
-   uint64_t m_previous_prime;
-   uint64_t m_current_prime;
-   std::list<uint64_t> m_primes;
-   std::string m_prime_name;
+   bool                 m_first_reading;
+   uint64_t             m_previous_prime;
+   uint64_t             m_current_prime;
+   std::list<uint64_t>  m_prime_factors;
+   std::string          m_prime_name;
 
 };
 
