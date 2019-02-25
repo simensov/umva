@@ -11,15 +11,17 @@
 
 using namespace std;
 
+const bool debug = false;
+
 //---------------------------------------------------------
 // Constructor
 
 PrimeFactor::PrimeFactor()
 {
   m_first_reading       = true;
-  m_previous_prime      = 0;
   m_current_prime       = 0;
   m_prime_factors       = {};
+  m_max_iterations      = 10000;
   m_prime_name          = "NUM_RESULT";
 }
 
@@ -28,6 +30,7 @@ PrimeFactor::PrimeFactor()
 
 PrimeFactor::~PrimeFactor()
 {
+
 }
 
 //---------------------------------------------------------
@@ -46,26 +49,15 @@ bool PrimeFactor::OnNewMail(MOOSMSG_LIST &NewMail)
       string inString = msg.GetString();      // get value as string
       m_current_prime = std::stoll(inString); // convert to long long
 
-      // m_prime_factors = setPrimeFactors(m_current_prime);
-
-      // m_current_prime = msg.GetDouble(); // Used for the initial implementation when an int was posted, not a string
+      PrimeEntry entry;
+      entry.setOriginalVal(m_current_prime);
+      m_all_entries.push_back(entry);
+      cout << "Adding entry in NewMail" << endl;
 
       m_first_reading = false;  // changes to false as soon we read a mail
     }
 
-    // Intermediate action:
-
-#if 0 // Keep these around just for template
-    string key   = msg.GetKey();
-    string comm  = msg.GetCommunity();
-    double dval  = msg.GetDouble();
-    string sval  = msg.GetString(); 
-    string msrc  = msg.GetSource();
-    double mtime = msg.GetTime();
-    bool   mdbl  = msg.IsDouble();
-    bool   mstr  = msg.IsString();
-#endif
-   }
+   } // for
 	
    return(true);
 }
@@ -102,15 +94,44 @@ string PrimeFactor::getPrimesAsString() const {
 
 bool PrimeFactor::Iterate()
 {
-  // Test for prime number
-  if (!m_first_reading) {
+  // If m_all_entries is not empty -> pick front one and calculate
+  // .front() returns reference, so we can change its values permanently
 
-    setPrimeFactors(m_current_prime);
+  PrimeEntry frontEntry;
+  bool complete = false;
+  uint64_t current_iterations = 0;
 
-    Notify(m_prime_name, getPrimesAsString() );
+  while(!m_all_entries.empty()){
+    
+    frontEntry = m_all_entries.front();
 
+    if(debug)
+      cout << "In while: " << frontEntry.getCurrentInt() << endl;
 
-  }
+    // stops by itself if it doesn't reach all factors
+    complete = frontEntry.factor(m_max_iterations); // - current_iterations);
+
+    // if frontEntry finished with iterations to spare, pop and continue
+    if(complete){
+
+      cout << frontEntry.getOriginalPrime() << " finished" << endl;
+
+      // notify and update iterations used
+      Notify(m_prime_name,frontEntry.getReport());
+
+      // pop from list
+      m_all_entries.pop_front();
+    
+    } else {
+      // if frontEntry did not finish within max iterations, push back and hope for better days. Pop front to let next entries be calculated on
+      
+      cout << frontEntry.getOriginalPrime() << " is on index: " << frontEntry.getCurrentIndex() << endl;
+
+      m_all_entries.push_back(frontEntry);
+      m_all_entries.pop_front();
+
+    } // else
+  } // while
 
   return(true);
 }
@@ -121,6 +142,7 @@ bool PrimeFactor::Iterate()
 
 bool PrimeFactor::OnStartUp()
 {
+  // generated info kept for later reference:
   list<string> sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
   if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
@@ -129,9 +151,6 @@ bool PrimeFactor::OnStartUp()
       string line  = *p;
       string param = tolower(biteStringX(line, '='));
       string value = line;
-
-      // Do something
-
     
     }
   }
@@ -183,5 +202,3 @@ void PrimeFactor::setPrimeFactors(uint64_t &integer){
     if (integer > 2) 
         m_prime_factors.push_back(integer); 
 } 
-
-
