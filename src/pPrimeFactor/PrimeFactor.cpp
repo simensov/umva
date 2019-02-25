@@ -21,7 +21,7 @@ PrimeFactor::PrimeFactor()
   m_first_reading       = true;
   m_current_prime       = 0;
   m_prime_factors       = {};
-  m_max_iterations      = 500000;
+  m_max_iterations      = 2000000;    // 2 000 000 gives ca. 5 sek solving time
   m_prime_name          = "PRIME_RESULT";
   m_solved_primes       = 0;
   m_received_primes     = 0;
@@ -106,6 +106,12 @@ bool PrimeFactor::Iterate()
     // If not completed, move that entry in the back of the list
     
     frontEntry = m_all_entries.front();
+
+    // Calculate solve time from the very first factorization attempt
+    if(!frontEntry.getInitiated()){
+      frontEntry.setID(frontEntry.getEntryID(),MOOSTime());
+      frontEntry.setInitiated(true);
+    }
 
     complete = frontEntry.factor(m_max_iterations - current_iterations);
 

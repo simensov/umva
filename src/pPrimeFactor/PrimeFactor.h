@@ -2,7 +2,7 @@
 /*    NAME: Simen Sem Oevereng                                              */
 /*    ORGN: MIT                                             */
 /*    FILE: PrimeFactor.h                                          */
-/*    DATE:                                                 */
+/*    DATE: Feb 25 2019                                               */
 /************************************************************/
 
 #ifndef PrimeFactor_HEADER
