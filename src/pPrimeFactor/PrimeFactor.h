@@ -18,7 +18,7 @@ class PrimeFactor : public CMOOSApp
 {
  public:
    PrimeFactor();
-   ~PrimeFactor();
+   ~PrimeFactor(){};
 
  protected: // Standard MOOSApp functions to overload  
    bool OnNewMail(MOOSMSG_LIST &NewMail);
@@ -26,8 +26,10 @@ class PrimeFactor : public CMOOSApp
    bool OnConnectToServer();
    bool OnStartUp();
 
+   // These were implemented early in Lab5, and their respective versions has been made in PrimeEntry.h which is processed by the m_all_entries list
    void setPrimeFactors(uint64_t &integer);
-   std::string getPrimesAsString() const;
+   double calcSolvingTime(PrimeEntry &entry) const;
+   std::string getGlobalReport(PrimeEntry &entry) const;
    void setCurrentPrime(uint64_t &integer){m_current_prime = integer;};
 
 
@@ -39,6 +41,9 @@ class PrimeFactor : public CMOOSApp
    std::list<uint64_t>  m_prime_factors;
    std::string          m_prime_name;
    uint64_t             m_max_iterations;
+
+   uint64_t             m_solved_primes;
+   uint64_t             m_received_primes;
 
    std::list<PrimeEntry> m_all_entries;
 

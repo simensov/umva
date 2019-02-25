@@ -1,10 +1,17 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% LOG FILE:       ./MOOSLog_25_2_2019_____12_00_14/MOOSLog_25_2_2019_____12_00_14._moos
+%% FILE OPENED ON  Wed Dec 31 19:00:00 1969
+%% LOGSTART               1551114013.49
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //------------------------------------------------
 // pPrimeFactor config block
 
 ServerHost = localhost
 ServerPort = 9000
 Simulator  = true
+
 Community  = pPrimeFactor
+
 MOOSTimeWarp = 1
 
 //------------------------------------------
@@ -25,6 +32,21 @@ ProcessConfig = pPrimeFactor
    CommsTick = 4
 }
 
+ProcessConfig = uTimerScript2
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  paused = false
+
+  event      = var=NUM_VALUE, val="$(7)", time=0.25
+  event      = var=NUM_VALUE, val="$(5)", time=0.5
+
+  reset_max  = nolimit // nolimit if it should run forever
+  reset_time = all-posted
+
+}
+
 ProcessConfig = pLogger
  {
    AsyncLog = true
@@ -43,11 +65,14 @@ ProcessConfig = uTimerScript
   paused = false
 
   event  = var=NUM_VALUE, val="112582705942171", time=0.25
+  
   event  = var=NUM_VALUE, val="115797848077099", time=0.50
   event  = var=NUM_VALUE, val="117463495419967", time=0.75
+
   event  = var=NUM_VALUE, val="125", time=1.00
   event  = var=NUM_VALUE, val="225", time=1.25
   event  = var=NUM_VALUE, val="325", time=1.50
+
   event  = var=NUM_VALUE, val="123939877913659", time=1.75
   event  = var=NUM_VALUE, val="126794093929207", time=2.00
   event  = var=NUM_VALUE, val="129263144299543", time=2.25
