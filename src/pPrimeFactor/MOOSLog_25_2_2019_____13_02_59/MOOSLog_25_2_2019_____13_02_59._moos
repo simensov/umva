@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% LOG FILE:       ./MOOSLog_24_2_2019_____19_27_52/MOOSLog_24_2_2019_____19_27_52._moos
+%% LOG FILE:       ./MOOSLog_25_2_2019_____13_02_59/MOOSLog_25_2_2019_____13_02_59._moos
 %% FILE OPENED ON  Wed Dec 31 19:00:00 1969
-%% LOGSTART               1551054471.63
+%% LOGSTART               1551117779.23
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //------------------------------------------------
 // pPrimeFactor config block
@@ -75,7 +75,7 @@ ProcessConfig = uTimerScript
 
   event  = var=NUM_VALUE, val="123939877913659", time=1.75
   event  = var=NUM_VALUE, val="126794093929207", time=2.00
-  event  = var=NUM_VALUE, val="129263144299542", time=2.25
+  event  = var=NUM_VALUE, val="129263144299543", time=2.25
 
   reset_max  = 0 // nolimit if it should run forever
   reset_time = all-posted

@@ -1,8 +1,8 @@
 /****************************************************************/
-/*   NAME: Simen Sem Oevereng                                             */
+/*   NAME: Simen Sem Oevereng                                   */
 /*   ORGN: MIT Cambridge MA                                     */
-/*   FILE: PrimeFactor_Info.cpp                               */
-/*   DATE: Dec 29th 1963                                        */
+/*   FILE: PrimeFactor_Info.cpp                                 */
+/*   DATE: Feb 25 2019                                          */
 /****************************************************************/
 
 #include <cstdlib>
@@ -20,10 +20,10 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The pPrimeFactor application is used for               ");
-  blk("                                                                ");
-  blk("                                                                ");
-  blk("                                                                ");
+  blk("  The pPrimeFactor application is used for recieving a large    ");
+  blk("  amount of numbers of all sizes, and to calculate all the      ");
+  blk("  factos of that number without blocking itself when large      ");
+  blk("  numbers are entered as well.                                  ");
   blk("                                                                ");
 }
 
@@ -94,12 +94,11 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
-  blk("                 string_val=BAR                                 ");
+  blk("  NUM_VALUE                                                     ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  Publications are determined by the node message content.      ");
+  blk("  PRIME_RESULT                                                  ");
   blk("                                                                ");
   exit(0);
 }

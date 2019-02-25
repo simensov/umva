@@ -54,7 +54,7 @@ string getPrimesAsString(list<uint64_t> m_prime_factors) {
 
 int main(){
 
-  uint64_t num = 10203040501;
+  uint64_t num = 12926314429954293;
 
   bool complete = false;
 
@@ -66,8 +66,7 @@ int main(){
 
 
   while(!complete){
-    cout << "Round" << endl;
-    complete = prime.factor(1000);
+    complete = prime.factor(10000);
     std::cout << prime.getCurrentIndex() << std::endl;
 
   }
