@@ -1,6 +1,3 @@
-// File: PrimeEntry.cpp
-// Simen Sem Oevereng, 24. feb 2019
-
 /************************************************************/
 /*    NAME: Simen Sem Oevereng                              */
 /*    ORGN: MIT                                             */
@@ -31,6 +28,8 @@ PrimeEntry::PrimeEntry()
    m_current_index      = 3;
    m_entry_id           = 0;
    m_solve_id           = 0;
+
+   m_initiated       = false;
 }
 
 PrimeEntry::PrimeEntry(uint64_t num, uint64_t ID, double time) : PrimeEntry()
