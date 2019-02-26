@@ -1,8 +1,8 @@
 /****************************************************************/
-/*   NAME: Simen Sem Oevereng                                             */
+/*   NAME: Simen Sem Oevereng                                   */
 /*   ORGN: MIT Cambridge MA                                     */
-/*   FILE: PrimeFactor_Info.h                                      */
-/*   DATE: Dec 29th 1963                                        */
+/*   FILE: PrimeFactor_Info.h                                   */
+/*   DATE: Feb 26 2019                                          */
 /****************************************************************/
 
 #ifndef PrimeFactor_INFO_HEADER
