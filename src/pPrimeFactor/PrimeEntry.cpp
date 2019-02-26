@@ -3,21 +3,29 @@
 /*    ORGN: MIT                                             */
 /*    FILE: PrimeEntry.cpp                                  */
 /*    DATE: Feb 25 2019  
+/*    EDIT: none yet  
+
       Header file copied from:
       http://oceanai.mit.edu/ivpman/pmwiki/pmwiki.php?n=Lab.ClassPrimeFactors, chapter 4.2.
       Implemented in PrimeEntry.cpp by me.
-                                                            */
+
+      This file contains the implementation of lab 5, in 
+      which the goal was to learn how to write a MOOSApp  
+      that calculated all the primes of different numbers
+      it recieved during a short amount of time while not
+      blocking its own calculations during the 0.25 sek of 
+      running (the AppsTick was set to 4).
+      
 /************************************************************/
 
 #include <iterator>
-
 #include "math.h"
 #include "PrimeEntry.h"
 
 using namespace std;
 
-const bool debug = true;
-
+//---------------------------------------------------------
+// Constructor
 PrimeEntry::PrimeEntry()
 {
    m_current_int        = 0;
@@ -28,10 +36,12 @@ PrimeEntry::PrimeEntry()
    m_current_index      = 3;
    m_entry_id           = 0;
    m_solve_id           = 0;
-
-   m_initiated       = false;
+   m_initiated          = false;
 }
 
+
+//---------------------------------------------------------
+// Delegating constructor
 PrimeEntry::PrimeEntry(uint64_t num, uint64_t ID, double time) : PrimeEntry()
 {
    setOriginalVal(num);
@@ -46,11 +56,10 @@ PrimeEntry::PrimeEntry(uint64_t num, uint64_t ID, double time) : PrimeEntry()
 //            by yet. max steps: maximum iterations allowed
 // @ edits    m_iterations: resets to 0. m_current_index: stores index
 // @ return   true or false based on reaching max or not
-
 bool PrimeEntry::reachedMax(unsigned long int &index, unsigned long int &max_steps){
 
-   // m_iterations is never set to 0 (in reachedMax) if we reach the max
-   // Therefore PrimeFactor::Iterate() can extract that value from PrimeEntry::getIterations()
+   // m_iterations is never set to 0 (in reachedMax) if we reach the max.
+   // therefore PrimeFactor::Iterate() can extract that value from PrimeEntry::getIterations()
 
    if(m_iterations >= max_steps){
       m_current_index = index;
@@ -71,22 +80,18 @@ bool PrimeEntry::reachedMax(unsigned long int &index, unsigned long int &max_ste
 
 bool PrimeEntry::factor(unsigned long int max_steps){
 
-
-   // Print the number of 2s that divide n 
+   // push the number of 2s that divide current integer
+   // here it is assumed that if we get a prime that is only divisable with 2, max steps will not be so small that we will not find the solution
    while (m_current_int % 2 == 0) 
    {   
      m_iterations++;
      m_factors.push_back(2); 
      m_current_int = m_current_int / 2;
-
-     if(m_iterations > max_steps){
-       m_current_index = m_iterations;
-       return(false);
-     }
    } 
 
-   // n must be odd at this point.  So we can skip  
-   // one element (Note i = i + 2) 
+   // current integer must be odd at this point: we can skip even numbers.
+   // while i divides the integer, push i and divide current integer.
+   // always check iterations vs. reachedMax, which will store progress if we have not finished solving before maximum iterations.
    for (uint64_t i = m_current_index; i <= sqrt(m_orig) + 1; i += 2) 
    { 
      m_iterations++;
@@ -95,22 +100,20 @@ bool PrimeEntry::factor(unsigned long int max_steps){
        return(false);
      }
      
-     // While i divides n, print i and divide n 
      while (m_current_int % i == 0) 
      { 
          m_factors.push_back(i); 
          m_current_int = m_current_int / i;
-
+         
          m_iterations++;
 
-        if(reachedMax(i,max_steps)){
-          return(false);
-        }
+         if(reachedMax(i,max_steps)){
+           return(false);
+         }
      } 
    } 
 
-   // This condition is to handle the case when n  
-   // is a prime number greater than 2 
+   // handle the case when the integer is a prime number greater than 2 
    if (m_current_int > 2) 
      m_factors.push_back(m_current_int); 
 
@@ -119,38 +122,15 @@ bool PrimeEntry::factor(unsigned long int max_steps){
 
 
 //---------------------------------------------------------
-// Procedure: getReport
-// Purpose:   Generates a string of factors found  
-// @ params   integer to test
-// @ edits    m_prime_factors
-// @ return   nothing
-string PrimeEntry::getReport() const {
-   
-   // To view result, notify the list as string of all elements
-   string stringList = "orig=" + to_string(m_orig) + ",";
-   list<uint64_t>::const_iterator it;
-
-   for(it = m_factors.begin(); it != m_factors.end(); ++it){
-      if (it == m_factors.begin())
-         stringList = stringList + to_string(*it);
-      else
-         stringList = stringList + ":" + to_string(*it);
-   }
-
-   return(stringList + ",username=simensov");
-}; 
-
-//---------------------------------------------------------
-// Procedure: getReport
-// Purpose:   Generates a string of factors found  
-// @ params   integer to test
-// @ edits    m_prime_factors
-// @ return   nothing
+// Procedure: getPrimes
+// Purpose:   generates a string of factors found with a colon in between  
+// @ params   no inputs
+// @ edits    no edits
+// @ return   a string of correct format, e.g. "2:3:3:5"
 string PrimeEntry::getPrimes() const {
 
    string stringList = "";
    list<uint64_t>::const_iterator it;
-
    for(it = m_factors.begin(); it != m_factors.end(); ++it){
 
       if (it == m_factors.begin())
