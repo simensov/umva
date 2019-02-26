@@ -123,7 +123,7 @@ string PrimeFactor::getGlobalReport(PrimeEntry &entry) const {
 // PURPOSE:   contains the main logic of the MOOSApp
 // @param     no inputs
 // @edits     m_total_distance
-// @returns
+// @returns   true
 bool PrimeFactor::Iterate()
 {
 
