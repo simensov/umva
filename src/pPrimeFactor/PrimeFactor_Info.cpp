@@ -97,7 +97,7 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("   PRIME_RESULT: a string containing information of original prime number, the order it was received in, the order it was solved in, how long it took to solve, all its primes, and the username of the maker of this app, e.g. \"orig=129263144299542,received=9,calculated=8,solve_time=1.297885,primes=2:3:3:3:11:41:151:1373:25601,username=simensov\"                      ");
+  blk("   PRIME_RESULT: a string containing information of original prime number, the order it was received in, the order it was solved in, how long it took to solve, all its primes, and the username of the maker of this app, e.g. \"orig=129263144299542,received=9,calculated=8,solve_time=1.297885,primes=2:3:3:3:11:41:151:1373:25601,username=simensov\"                                                                   ");
   blk("                                                                ");
   exit(0);
 }
