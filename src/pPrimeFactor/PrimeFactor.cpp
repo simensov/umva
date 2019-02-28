@@ -53,6 +53,7 @@ bool PrimeFactor::OnNewMail(MOOSMSG_LIST &NewMail)
   MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
+    
     string key = msg.GetKey();  
     
     if (key == "NUM_VALUE"){

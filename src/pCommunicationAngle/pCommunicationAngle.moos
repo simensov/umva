@@ -1,0 +1,30 @@
+//------------------------------------------------
+// pCommunicationAngle config block
+
+ServerHost = oceanai.mit.edu
+ServerPort = 9011 
+
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = pCommunicationAngle @ NewConsole = false
+  Run = uXMS  @ NewConsole = true
+}
+
+
+ProcessConfig = pCommunicationAngle
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
+ProcessConfig = uXMS
+{
+  
+   AppTick   = 4
+   CommsTick = 4
+
+   var = NAV_X 
+
+}
