@@ -34,6 +34,7 @@ double RayEntry::calculateTargetDepth(double &xdist,double &zdist){
   // use distances to find chord length between points
   // use formula relating arc length and chord length to theta
 
+  double radius = getSoundSpeed()
   double theta = m_theta0 - asin(sqrt(xdist*xdist + zdist*zdist) / 2*m_radius);
 
   // use theta to find the parameterized z-value

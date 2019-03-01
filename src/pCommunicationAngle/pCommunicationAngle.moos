@@ -1,7 +1,7 @@
 //------------------------------------------------
 // pCommunicationAngle config block
 
-ServerHost = oceanai.mit.edu
+ServerHost = 18.38.2.158
 ServerPort = 9011 
 
 ProcessConfig = ANTLER
@@ -9,7 +9,7 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = pCommunicationAngle @ NewConsole = false
-  Run = uXMS  @ NewConsole = true
+  Run = uXMS  @ NewConsole = false
 }
 
 

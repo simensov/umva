@@ -6,7 +6,8 @@
 SET(SRC
   CommunicationAngle.cpp
   CommunicationAngle_Info.cpp
-  RayEntry.cpp
+  # RayEntry.cpp
+  Geometry.cpp
   main.cpp
 )
 

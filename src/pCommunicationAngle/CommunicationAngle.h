@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include "RayEntry.h"
+#include "Geometry.h" // Point and Line objects
 
 using namespace std;
 
@@ -29,7 +29,7 @@ class CommunicationAngle : public CMOOSApp
    bool OnConnectToServer();
    bool OnStartUp();
 
-   // some logical test on RayEntry and depth
+   // some logical test on Geometry and depth
    // some recalculating of needed horizontal position
 
  protected:
@@ -43,14 +43,19 @@ class CommunicationAngle : public CMOOSApp
    double m_water_depth;
    double m_time_interval;
 
-   // Other var
-   double m_current_x;
+   string m_v_name;
+   double m_v_nav_x;
+   double m_v_nav_y;
+   double m_v_nav_depth;
+   double m_v_nav_heading;
+   double m_v_nav_speed;
 
-   string m_vehicle_name;
-   string m_collaborator_name;
-
-   RayEntry m_current_ray;   
-   
+   string m_c_name;
+   double m_c_nav_x;
+   double m_c_nav_y;
+   double m_c_nav_depth;
+   double m_c_nav_heading;
+   double m_c_nav_speed;
 };
 
 #endif 

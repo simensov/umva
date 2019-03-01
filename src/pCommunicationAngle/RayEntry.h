@@ -19,8 +19,6 @@ class RayEntry
    RayEntry(double &depth, double &angle);
    ~RayEntry(){};
 
- protected:
-
    // mutator
    void setSoundSpeedParm(double &surfaceSpeed, double &gradient){m_c0 = surfaceSpeed; m_gradient = gradient;};
 

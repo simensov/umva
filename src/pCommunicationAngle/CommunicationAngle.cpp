@@ -21,8 +21,20 @@ CommunicationAngle::CommunicationAngle()
   m_sound_speed_gradient     = 0;
   m_water_depth              = 0;
   m_time_interval            = 0;
-  m_current_x                = 0;
-  m_current_ray              = RayEntry();
+
+  m_v_name  = ",";
+  m_v_nav_x = 0;
+  m_v_nav_y = 0;
+  m_v_nav_depth = 0;
+  m_v_nav_heading = 0;
+  m_v_nav_speed = 0;
+
+  m_c_name = "";
+  m_c_nav_x = 0;
+  m_c_nav_y = 0;
+  m_c_nav_depth = 0;
+  m_c_nav_heading = 0;
+  m_c_nav_speed = 0;
 }
 
 //---------------------------------------------------------
@@ -57,23 +69,24 @@ bool CommunicationAngle::OnNewMail(MOOSMSG_LIST &NewMail)
       Register(msg.GetString() + "_NAV_SPEED", 0);
     }
     if (key == "NAV_X"){
-      
-      m_current_x = atol(msg.GetString().c_str()); 
+      m_v_nav_x = atof(msg.GetString().c_str()); 
+      m_first_reading = false; 
     }
     if (key == "NAV_Y"){
-      
+      m_v_nav_y = atof(msg.GetString().c_str());
+
       m_first_reading = false; 
     }
     if (key == "NAV_DEPTH"){
-      
+      m_v_nav_depth = atof(msg.GetString().c_str());
       m_first_reading = false; 
     }
     if (key == "NAV_HEADING"){
-      
+      m_v_nav_heading = atof(msg.GetString().c_str());
       m_first_reading = false; 
     }
     if (key == "NAV_SPEED"){
-      
+      m_v_nav_speed = atof(msg.GetString().c_str());
       m_first_reading = false; 
     }
 
@@ -113,11 +126,22 @@ bool CommunicationAngle::Iterate()
   Notify("ACOUSTIC_PATH","elev_angle=xxx.x, transmission_loss=yyy.y,id=user@mit.edu");
 
 
-  // RayEntry ray(collabdepth,collabangle);
-  // ray.setSoundSpeedParam(m_surface_sound_speed,m_sound_speed_gradient)
+  // Make two points coinciding with positions of vessels
 
 
+  // Create the line that goes through them
 
+
+  // Find corresponding circle 
+
+
+  // Use radius and param to find theta0 
+
+
+  // Find deepest possible point vs. max depth
+
+
+  // React accordingly
 
   // String containing the location to which to transit at current speed for achieving connectivity. If a path currently exists, the location is obviously the current location. 
   Notify("CONNECTIVITY_LOCATION","x=xxx.xxx,y=yyy.yyy,depth=ddd.d,id=user@mit.edu");
@@ -145,9 +169,7 @@ bool CommunicationAngle::OnStartUp()
         // Sound speed in m/s at the sea surface
       }
       else if(param == "sound_speed_gradient") {
-        // Sound speed gradient with depth, in (m/s)/m.
-
-        
+        // Sound speed gradient with depth, in (m/s)/m.        
       }
       else if(param == "water_depth") {
         // Water depth in meters
