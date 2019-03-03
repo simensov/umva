@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include "Geometry.h" // Point and Line objects
+#include "Geometry.h" // Point and Line objectsm
 
 using namespace std;
 
@@ -43,6 +43,11 @@ class CommunicationAngle : public CMOOSApp
    double m_water_depth;
    double m_time_interval;
 
+   // Global var
+   double m_theta0;
+
+   // Local var
+
    string m_v_name;
    double m_v_nav_x;
    double m_v_nav_y;
@@ -56,6 +61,9 @@ class CommunicationAngle : public CMOOSApp
    double m_c_nav_depth;
    double m_c_nav_heading;
    double m_c_nav_speed;
+
+   double m_radius;
+   double m_z_max;
 };
 
 #endif 

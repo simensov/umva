@@ -35,6 +35,9 @@ CommunicationAngle::CommunicationAngle()
   m_c_nav_depth = 0;
   m_c_nav_heading = 0;
   m_c_nav_speed = 0;
+
+  m_radius  = 0;
+  m_z_max   = 0;
 }
 
 //---------------------------------------------------------
@@ -57,7 +60,7 @@ bool CommunicationAngle::OnNewMail(MOOSMSG_LIST &NewMail)
     string key = msg.GetKey();  
     
     if (key == "VEHICLE_NAME"){
-      
+      m_v_name = msg.GetString();
       m_first_reading = false; 
     }
     if (key == "COLLABORATOR_NAME"){
@@ -121,30 +124,41 @@ bool CommunicationAngle::OnConnectToServer()
 bool CommunicationAngle::Iterate()
 {
   if(false){
+    // Make two points coinciding with positions of vessels
+    Point pos_c(m_c_nav_x,m_c_nav_y);
+    Point pos_v(m_v_nav_x,m_v_nav_y);
 
-  // String containing your answer, and your email for identifation. In case no direct path exists, the published values in ACOUSTIC_PATH must be specified as NaN.
-  Notify("ACOUSTIC_PATH","elev_angle=xxx.x, transmission_loss=yyy.y,id=user@mit.edu");
+    // Create the line that goes through them
+    Line chordline(pos_c,pos_v);
+
+    // Find corresponding circle radius according to parameters
+    m_radius = chordline.getCircleRadius(-m_surface_sound_speed/m_sound_speed_gradient);
+
+    // Use radius and param to find theta0 
+    m_theta0 = acos( m_surface_sound_speed/(m_sound_speed_gradient*m_radius) );
+
+    // Find deepest possible point vs. max depth
+    m_z_max = m_radius - m_surface_sound_speed / m_sound_speed_gradient;
+
+    // React
+    if(m_z_max >= m_water_depth){
+      // No direct curve is possible
+      // Suggest movement: find a new angle that makes this zmax smaller 
+      // Find corresponding point of our vessel (use parameterization and arc length / chord relations if necessary)
+
+      // Notify accordingly
+
+    }
+    else{
+      // Possible path exists. Calculate transmission loss and notify
+
+    }
 
 
-  // Make two points coinciding with positions of vessels
-
-
-  // Create the line that goes through them
-
-
-  // Find corresponding circle 
-
-
-  // Use radius and param to find theta0 
-
-
-  // Find deepest possible point vs. max depth
-
-
-  // React accordingly
-
-  // String containing the location to which to transit at current speed for achieving connectivity. If a path currently exists, the location is obviously the current location. 
-  Notify("CONNECTIVITY_LOCATION","x=xxx.xxx,y=yyy.yyy,depth=ddd.d,id=user@mit.edu");
+    // String containing your answer, and your email for identifation. In case no direct path exists, the published values in ACOUSTIC_PATH must be specified as NaN.
+    Notify("ACOUSTIC_PATH","elev_angle=xxx.x,transmission_loss=yyy.y,id=user@mit.edu");
+    // String containing the location to which to transit at current speed for achieving connectivity. If a path currently exists, the location is obviously the current location. 
+    Notify("CONNECTIVITY_LOCATION","x=xxx.xxx,y=yyy.yyy,depth=ddd.d,id=user@mit.edu");
   }
   
   return(true);
@@ -191,7 +205,6 @@ bool CommunicationAngle::OnStartUp()
 
 void CommunicationAngle::RegisterVariables()
 {
-
   Register("VEHICLE_NAME",0); // Name of the ownship platform
   Register("COLLABORATOR_NAME",0); // Name of collaborator, referred to as 'collaborator' in the following.
   Register("NAV_X",0); // ownship East location in in local metric coordinates.
