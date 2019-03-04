@@ -31,7 +31,7 @@ PrimeFactor::PrimeFactor()
 {
   m_first_reading       = true;
   m_current_prime       = 0;
-  m_prime_factors       = {};
+  // m_prime_factors       = {};
   m_max_iterations      = 1000000;  // 2 000 000 gives 5 sek total solving time
   m_prime_name          = "PRIME_RESULT";
   m_solved_primes       = 0;

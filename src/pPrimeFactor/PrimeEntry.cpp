@@ -31,7 +31,7 @@ PrimeEntry::PrimeEntry()
    m_current_int        = 0;
    m_orig               = 0;
    m_done               = false;
-   m_factors            = {};
+   // m_factors            = {};
    m_iterations         = 0;
    m_current_index      = 3;
    m_entry_id           = 0;
