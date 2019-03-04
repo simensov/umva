@@ -8,12 +8,12 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = pCommunicationAngle @ NewConsole = false
+  Run = pCommunicationAngle @ NewConsole = false ~simensov
   Run = uXMS  @ NewConsole = false
 }
 
 
-ProcessConfig = pCommunicationAngle
+ProcessConfig = pCommunicationAngle_simensov
 {
    AppTick   = 4
    CommsTick = 4

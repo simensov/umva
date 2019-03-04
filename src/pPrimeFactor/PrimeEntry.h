@@ -14,8 +14,7 @@
       that calculated all the primes of different numbers
       it recieved during a short amount of time while not
       blocking its own calculations during the 0.25 sek of 
-      running (the AppsTick was set to 4).
-      
+      running (the AppsTick was set to 4).                  */
 /************************************************************/
 
 
@@ -43,7 +42,7 @@ class PrimeEntry
       void setSolveID(uint64_t sID)       {m_solve_id = sID; };
       void setInitiated(bool state)       {m_initiated = state;};
 
-      bool reachedMax(unsigned long int &index, unsigned long int &max_steps);
+      bool reachedMax(unsigned long int index, unsigned long int &max_steps);
       bool factor(unsigned long int max_steps);
 
       // accessors

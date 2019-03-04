@@ -14,8 +14,7 @@
       that calculated all the primes of different numbers
       it recieved during a short amount of time while not
       blocking its own calculations during the 0.25 sek of 
-      running (the AppsTick was set to 4).
-      
+      running (the AppsTick was set to 4).                  */
 /************************************************************/
 
 #include <iterator>

@@ -29,6 +29,10 @@ class CommunicationAngle : public CMOOSApp
    bool OnConnectToServer();
    bool OnStartUp();
 
+   double transmissionLoss();
+   void notifyAcousticPath(string name, double angle, double loss);
+   void notifyConnectivityLocations(string name, Point p);
+
    // some logical test on Geometry and depth
    // some recalculating of needed horizontal position
 
@@ -47,7 +51,6 @@ class CommunicationAngle : public CMOOSApp
    double m_theta0;
 
    // Local var
-
    string m_v_name;
    double m_v_nav_x;
    double m_v_nav_y;
@@ -64,6 +67,9 @@ class CommunicationAngle : public CMOOSApp
 
    double m_radius;
    double m_z_max;
+
+   string m_path_name;
+   string m_c_l_name;
 };
 
 #endif 

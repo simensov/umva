@@ -14,8 +14,7 @@
       that calculated all the primes of different numbers
       it recieved during a short amount of time while not
       blocking its own calculations during the 0.25 sek of 
-      running (the AppsTick was set to 4).
-      
+      running (the AppsTick was set to 4).                  */
 /************************************************************/
 
 #include <iterator>
@@ -28,24 +27,33 @@ using namespace std;
 // Constructor
 PrimeEntry::PrimeEntry()
 {
-   m_current_int        = 0;
-   m_orig               = 0;
-   m_done               = false;
-   // m_factors            = {};
-   m_iterations         = 0;
-   m_current_index      = 3;
-   m_entry_id           = 0;
-   m_solve_id           = 0;
-   m_initiated          = false;
+  m_current_int        = 0;
+  m_orig               = 0;
+  m_done               = false;
+  // m_factors            = {};
+  m_iterations         = 0;
+  m_current_index      = 3;
+  m_entry_id           = 0;
+  m_solve_id           = 0;
+  m_initiated          = false;
 }
 
 
 //---------------------------------------------------------
 // Delegating constructor
-PrimeEntry::PrimeEntry(uint64_t num, uint64_t ID, double time) : PrimeEntry()
+PrimeEntry::PrimeEntry(uint64_t num, uint64_t ID, double time)()
 {
-   setOriginalVal(num);
-   setID(ID,time);
+  m_current_int        = 0;
+  m_orig               = 0;
+  m_done               = false;
+  // m_factors            = {};
+  m_iterations         = 0;
+  m_current_index      = 3;
+  m_entry_id           = 0;
+  m_solve_id           = 0;
+  m_initiated          = false;
+  setOriginalVal(num);
+  setID(ID,time);
 }
 
 
@@ -58,16 +66,16 @@ PrimeEntry::PrimeEntry(uint64_t num, uint64_t ID, double time) : PrimeEntry()
 // @ return   true or false based on reaching max or not
 bool PrimeEntry::reachedMax(unsigned long int &index, unsigned long int &max_steps){
 
-   // m_iterations is never set to 0 (in reachedMax) if we reach the max.
-   // therefore PrimeFactor::Iterate() can extract that value from PrimeEntry::getIterations()
+  // m_iterations is never set to 0 (in reachedMax) if we reach the max.
+  // therefore PrimeFactor::Iterate() can extract that value from PrimeEntry::getIterations()
 
-   if(m_iterations >= max_steps){
-      m_current_index = index;
-      m_iterations = 0;
-      return(true);
-   }
+  if(m_iterations >= max_steps){
+    m_current_index = index;
+    m_iterations = 0;
+    return(true);
+  }
 
-   return(false);
+  return(false);
 }
 
 //---------------------------------------------------------

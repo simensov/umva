@@ -38,6 +38,10 @@ CommunicationAngle::CommunicationAngle()
 
   m_radius  = 0;
   m_z_max   = 0;
+
+  m_path_name = "ACOUSTIC_PATH";
+  m_c_l_name = "CONNECTIVITY_LOCATION";
+
 }
 
 //---------------------------------------------------------
@@ -123,7 +127,8 @@ bool CommunicationAngle::OnConnectToServer()
 
 bool CommunicationAngle::Iterate()
 {
-  if(false){
+
+  if(true){
     // Make two points coinciding with positions of vessels
     Point pos_c(m_c_nav_x,m_c_nav_y);
     Point pos_v(m_v_nav_x,m_v_nav_y);
@@ -134,15 +139,36 @@ bool CommunicationAngle::Iterate()
     // Find corresponding circle radius according to parameters
     m_radius = chordline.getCircleRadius(-m_surface_sound_speed/m_sound_speed_gradient);
 
-    // Use radius and param to find theta0 
-    m_theta0 = acos( m_surface_sound_speed/(m_sound_speed_gradient*m_radius) );
+    // Get x and z position of the circle center
+    Point center = chordline.getCircleCenter(-m_surface_sound_speed/m_sound_speed_gradient);
+
+    // Use radius and param to find theta0 that should reach
+    // theta0 is now made by considering the current positions of the vessels
+    m_theta0 = acos(m_surface_sound_speed / (m_sound_speed_gradient*m_radius));
 
     // Find deepest possible point vs. max depth
     m_z_max = m_radius - m_surface_sound_speed / m_sound_speed_gradient;
 
-    // React
+    // calculate transmission loss along the circle
+    double t_loss = transmissionLoss();
+
+    // react according to depth and feasibility
     if(m_z_max >= m_water_depth){
-      // No direct curve is possible
+      // No direct curve is possible, unless we are closer than the bottom of the ray
+
+      // if we are closer than the circle bottom, and the depth is smaller than the maximum depth, then we are good
+      if(pos_v.getX() < center.getX() && pos_v.getZ() < m_z_max){
+        notifyAcousticPath(m_path_name, m_theta0, t_loss);
+        notifyConnectivityLocations(m_c_l_name,pos_v);
+      }
+      else{
+        // do something with theta to tell about non feasible path
+        notifyAcousticPath(m_path_name, m_theta0, t_loss);
+
+        // find a feasible location!!
+        notifyConnectivityLocations(m_c_l_name,pos_v);
+      }
+
       // Suggest movement: find a new angle that makes this zmax smaller 
       // Find corresponding point of our vessel (use parameterization and arc length / chord relations if necessary)
 
@@ -152,16 +178,17 @@ bool CommunicationAngle::Iterate()
     else{
       // Possible path exists. Calculate transmission loss and notify
 
+      // m_theta0 has to be published to m_c_l_name
+      notifyAcousticPath(m_path_name, m_theta0, 0);
+
+      notifyConnectivityLocations(m_c_l_name,pos_v);
+
     }
 
-
-    // String containing your answer, and your email for identifation. In case no direct path exists, the published values in ACOUSTIC_PATH must be specified as NaN.
-    Notify("ACOUSTIC_PATH","elev_angle=xxx.x,transmission_loss=yyy.y,id=user@mit.edu");
-    // String containing the location to which to transit at current speed for achieving connectivity. If a path currently exists, the location is obviously the current location. 
-    Notify("CONNECTIVITY_LOCATION","x=xxx.xxx,y=yyy.yyy,depth=ddd.d,id=user@mit.edu");
-  }
   
   return(true);
+  }
+
 }
 
 //---------------------------------------------------------
@@ -215,3 +242,28 @@ void CommunicationAngle::RegisterVariables()
 
 }
 
+double CommunicationAngle::transmissionLoss(){
+
+  return 0.0;
+}
+
+void CommunicationAngle::notifyAcousticPath(string name, double angle, double loss){
+    // String containing your answer, and your email for identifation. In case no direct path exists, the published values in ACOUSTIC_PATH must be specified as NaN.
+
+  if(abs(angle) > 2*M_PI){
+    double f1 = nan("-1");
+    Notify(name,"elev_angle=" + to_string(f1) + "transmission_loss=" + to_string(f1) + ",id=simensov@mit.edu");
+  } 
+  else{
+    Notify(name,"elev_angle=" + to_string(angle) + "transmission_loss=" + to_string(loss) + ",id=simensov@mit.edu");
+  }
+
+}
+
+void CommunicationAngle::notifyConnectivityLocations(string name, Point p){
+
+    // String containing the location to which to transit at current speed for achieving connectivity. If a path currently exists, the location is obviously the current location. 
+
+    Notify(name,"x=" + to_string(p.getX())+",y=" + to_string(m_v_nav_y) + ",depth=" + to_string(p.getZ()) + ",id=simensov@mit.edu");
+
+}
