@@ -41,7 +41,7 @@ PrimeEntry::PrimeEntry()
 
 //---------------------------------------------------------
 // Delegating constructor
-PrimeEntry::PrimeEntry(uint64_t num, uint64_t ID, double time)()
+PrimeEntry::PrimeEntry(uint64_t num, uint64_t ID, double time)
 {
   m_current_int        = 0;
   m_orig               = 0;
@@ -64,7 +64,7 @@ PrimeEntry::PrimeEntry(uint64_t num, uint64_t ID, double time)()
 //            by yet. max steps: maximum iterations allowed
 // @ edits    m_iterations: resets to 0. m_current_index: stores index
 // @ return   true or false based on reaching max or not
-bool PrimeEntry::reachedMax(unsigned long int &index, unsigned long int &max_steps){
+bool PrimeEntry::reachedMax(unsigned long int index, unsigned long int &max_steps){
 
   // m_iterations is never set to 0 (in reachedMax) if we reach the max.
   // therefore PrimeFactor::Iterate() can extract that value from PrimeEntry::getIterations()
