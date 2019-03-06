@@ -23,7 +23,7 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB          @ NewConsole = false
-  Run = pLogger         @ NewConsole = false
+  // Run = pLogger         @ NewConsole = false // TODO: turn on logger if relevant
   Run = uSimMarine	    @ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = false

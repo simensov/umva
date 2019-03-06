@@ -189,14 +189,25 @@ ProcessConfig = pMarineViewer
   left_context[return_point]  = VIEW_POINT = x=$(XPOS),y=$(YPOS),label=return_point
   left_context[return_point]  = RETURN = true
 
-  left_context[view_point]  = VIEW_POINT = x=$(XPOS),y=$(YPOS),label=hello
-  left_context[view_poly]  = VIEW_POLYGON = format=radial,x=$(XPOS),y=$(YPOS), radius=10, pts=8, edge_size=1,label=mypoly
+  // ADDED IN ASSIGNMENT 4
+
+  // adds option of choosing small polygon by clicking somewhere
+  left_context[east_loiter] = LOITER_REGION=east
+  left_context[east_loiter] = LOITER_EAST_UPDATES = polygon = format=radial, x=$(XPOS),y=$(YPOS),radius=20,pts=8 
+
+
+  // left_context[east_loiter] = duration_reset = BRAVO_TIMER_RESET=true
+
+  // left_context[view_point]  = VIEW_POINT = x=$(XPOS),y=$(YPOS),label=hello
+  // left_context[view_poly]  = VIEW_POLYGON = format=radial,x=$(XPOS),y=$(YPOS), radius=10, pts=8, edge_size=1,label=mypoly
   // left_context[view_both]  = # create multiple instances of the same click
 
 
   right_context[return] = DEPLOY=true
   right_context[return] = MOOS_MANUAL_OVERRIDE=false
   right_context[return] = RETURN=false
+
+
 
   scope  = RETURN
   scope  = WPT_STAT
