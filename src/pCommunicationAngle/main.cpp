@@ -11,10 +11,15 @@
 #include "CommunicationAngle.h"
 #include "CommunicationAngle_Info.h"
 
+ #include <iomanip> // for std::fixed and std::setprecision(2);
+
 using namespace std;
 
 int main(int argc, char *argv[])
 {
+  std::cout << std::fixed;
+  std::cout << std::setprecision(2);
+
   string mission_file;
   string run_command = argv[0];
 

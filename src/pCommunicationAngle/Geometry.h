@@ -1,10 +1,18 @@
 /************************************************************/
-/*    NAME: Simen Sem Oevereng                                              */
-/*    ORGN: MIT                                             */
-/*    FILE: Geometry.h                                        */
-/*    DATE:                                                 */
-/************************************************************/
+/*    NAME: Simen Sem Oevereng                              
+      ORGN: MIT                                             
+      FILE: Geometry.h                          
+      DATE: Mar 5 2019                                      
+      EDIT: -  
 
+      Implementations in Geometry.cpp.
+
+      This file contains the a support classes, Point and
+      Line, to the implementation of lab 6, in which the
+      goal was to calculate transmission angle and loss 
+      between two underwater vehicles trying to communicate.
+*/
+/************************************************************/
 
 #ifndef Geometry_HEADER
 #define Geometry_HEADER
@@ -23,9 +31,9 @@ class Point
       Point(double x, double z) {m_x = x; m_z = z;};
       ~Point(){};
 
+      // accessors. public since they are used in Line-class
       double getX() const {return m_x;};
       double getZ() const {return m_z;};
-
       string printPoint() const ;
 
    protected:
@@ -39,31 +47,27 @@ class Point
 class Line
 {
    public:
-      Line();
       Line(Point p1, Point p2){setPoints(p1,p2); setAngle();};
       ~Line(){};
 
+      // accessors
+      double getAngle()                      const {return(m_theta);};
+      double getCircleRadius(double z_end)   const;
+
+      // tools
       double length()   const;
-      double getAngle() const {return(m_theta);};
-
-      Point getMidpoint() const; 
-      Point getCircleCenter(double z_end) const;
-      double getCircleRadius(double z_end) const;
-
-      Line getNormalLine(double z_end) const; // Not used
-
+      Point midpoint() const; 
+      Point circleCenter(double z_end) const;
       string printLine() const;
 
    protected:
-      void setPoints(Point &p1, Point &p2) {m_p1 = p1;
-      m_p2 = p2 ;};
+      void setPoints(Point &p1, Point &p2) {m_p1 = p1; m_p2 = p2 ;};
       void setAngle();
 
-
    protected:
-      Point m_p1;
-      Point m_p2;
-      double m_theta;
+      Point m_p1;       // starting point
+      Point m_p2;       // end point
+      double m_theta;   // angle (instead of slope, measured from p1)
 };
 
 #endif

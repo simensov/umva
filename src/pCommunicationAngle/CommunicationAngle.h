@@ -1,10 +1,19 @@
 /************************************************************/
-/*    NAME: Simen Sem Oevereng                                              */
+/*    NAME: Simen Sem Oevereng                              */
 /*    ORGN: MIT                                             */
-/*    FILE: CommunicationAngle.h                                          */
-/*    DATE:                                                 */
-/************************************************************/
+/*    FILE: CommunicationAngle.h                          */
+/*    DATE: Mar 5 2019                                      */
+/*    EDIT: -  
 
+      Implementations in CommunicationAngle.cpp.
+
+      This file contains the implementation of lab 6, in 
+      which the goal was to calculate transmission angle 
+      and loss between two underwater vehicles trying
+      to communicate.
+
+*/
+/************************************************************/
 #ifndef CommunicationAngle_HEADER
 #define CommunicationAngle_HEADER
 
@@ -29,9 +38,11 @@ class CommunicationAngle : public CMOOSApp
    bool OnConnectToServer();
    bool OnStartUp();
 
-   double transmissionLoss();
+   double soundSpeed(double depth) const;
+   double transmissionLoss() const;
    void notifyAcousticPath(string name, double angle, double loss);
    void notifyConnectivityLocations(string name, Point p);
+   void adjustTheta(Point pos_c, Point center);
 
    // some logical test on Geometry and depth
    // some recalculating of needed horizontal position
@@ -40,6 +51,7 @@ class CommunicationAngle : public CMOOSApp
    void RegisterVariables();
 
    bool m_first_reading;
+   bool m_initiated;
 
    // Config var
    double m_surface_sound_speed;
@@ -69,7 +81,7 @@ class CommunicationAngle : public CMOOSApp
    double m_z_max;
 
    string m_path_name;
-   string m_c_l_name;
+   string m_conn_loc_name;
 };
 
 #endif 
