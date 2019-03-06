@@ -54,9 +54,6 @@ CommunicationAngle::CommunicationAngle()
   m_radius  = 0;
   m_z_max   = 0;
 
-  m_path_name = "ACOUSTIC_PATH";
-  m_conn_loc_name = "CONNECTIVITY_LOCATION";
-
 }
 
 //---------------------------------------------------------
@@ -181,63 +178,92 @@ bool CommunicationAngle::Iterate()
   // only complete task if  variables have been received from OnNewMail
   if(m_initiated){
 
-    // Make two points coinciding with positions of vessels
+    // make two points coinciding with positions of vessels,
+    // create the chordline that goes through them,
+    // find corresponding circle radius according,
+    // get Point with the the circle center,
+
     Point pos_c(m_c_nav_x,m_c_nav_depth);
     Point pos_v(m_v_nav_x,m_v_nav_depth);
 
-    // create the chordline that goes through them
     Line chordline(pos_c,pos_v);
+    if(m_c_nav_x > m_v_nav_x)
+      cout << "draw from v" << endl;
+      chordline = Line(pos_v,pos_c);
 
-    // find corresponding circle radius according to parameters
-    m_radius = chordline.getCircleRadius(-m_surface_sound_speed/m_sound_speed_gradient);
+    cout << "Line angle: " << chordline.getAngle() << endl;
 
-    // Get x and z position of the circle center
-    Point center = chordline.circleCenter(-m_surface_sound_speed/m_sound_speed_gradient);
+    double virtualHeight = m_surface_sound_speed/m_sound_speed_gradient;
+    m_radius = chordline.circleRadius(-virtualHeight);
+
+    Point center = chordline.circleCenter(-virtualHeight);
 
     if(debug){
       cout << "C pos: " << pos_c.printPoint() << " - V pos: " << pos_v.printPoint() << " - Center pos: " << center.printPoint() << " - R: " << m_radius << endl;
     }
 
-    // angle of transmission is perpendicular to line from sound source to center of circle. depends
-    adjustTheta(pos_c, center);
-
-    // find deepest possible point vs. max depth
-    m_z_max = m_radius - m_surface_sound_speed / m_sound_speed_gradient;
-
+    // adjust transmission angle
+    // find depth of deepest point on circle
     // calculate transmission loss along the arc
+
+    adjustTheta(pos_c, center);
+    m_z_max = m_radius - m_surface_sound_speed / m_sound_speed_gradient;
     double t_loss = transmissionLoss();
 
+    if(m_z_max >= m_water_depth){
+      // react according to depth and feasibility
+      // if we are on correct side of bottom, we could still have a path
+      // otherwise: adjust. setting loss to -1 tells about no path
+      // calculate a new point where transmission is possible
+      
+      cout << "Checking depth loop" << endl;
 
-    // react according to depth and feasibility
-    if(debug){
+      // using pythagoras to see if we could be closer to source 
+      bool ok = false;
 
-      if(m_z_max >= m_water_depth){
-        cout << "Checking depth loop" << endl;
-        // if we are closer than the circle bottom, and the depth is smaller than the maximum depth, then we are good
-        if(pos_v.getX() < center.getX() && pos_v.getZ() < m_z_max){
-          notifyAcousticPath(m_path_name, m_theta0, t_loss);
-          notifyConnectivityLocations(m_conn_loc_name,pos_v);
-        }
-        else{
-          // we have to adjust. setting loss to -1 tells about no path
-          notifyAcousticPath(m_path_name, m_theta0, -1);
-
-          // TODO: find a feasible location!
-          // suggest movement: find a new angle that makes this zmax smaller 
-          // Find corresponding point of our vessel (use parameterization and arc length / chord relations if necessary)
-          notifyConnectivityLocations(m_conn_loc_name,pos_v);
-        }
-
+      if(pos_v.getX() > pos_c.getX() &&  pos_v.getZ() > pos_c.getZ()){
+        // vehicle is deeper and to the right
+        ok = (pos_v.getX() < center.getX() \
+          - sqrt( pow(m_radius,2) - pow(virtualHeight+m_water_depth,2) )  ); 
+      }
+      else if(pos_v.getX() < pos_c.getX() && pos_v.getZ() > pos_c.getZ()){
+        // vehicle is deeper and to the left
+        ok = (pos_v.getX() > center.getX() \
+         + sqrt(pow(m_radius,2) - pow(virtualHeight+m_water_depth,2) ) );
       }
       else{
-
-        // path exists. publish transmission angle and loss, and location
-        notifyAcousticPath(m_path_name, m_theta0, t_loss);
-        notifyConnectivityLocations(m_conn_loc_name,pos_v);
-
+        // else we are higher than source and should be doing fine!
+        ok = true;
       }
+
+      if(ok){
+        // figure out if the x position is to the left of the circle hitting bottom
+        cout << "All good anyways" << endl;
+
+        notifyAcousticPath("ACOUSTIC_PATH", m_theta0, t_loss);
+        notifyConnectivityLocations("CONNECTIVITY_LOCATION",pos_v);
+      }
+      else{
+        cout << "New strategy mate" << endl;
+
+        notifyAcousticPath("ACOUSTIC_PATH", m_theta0, -1);
+
+        // TODO: find a feasible location!
+        // suggest movement: find a new angle that makes this zmax smaller 
+        // Find corresponding point of our vessel (use parameterization and arc length / chord relations if necessary)
+
+        findNewLocation();
+      }
+
     }
-  
+    else{
+      cout << "No problems!!!" << endl;
+      // path exists. publish transmission angle and loss, and location
+      notifyAcousticPath("ACOUSTIC_PATH", m_theta0, t_loss);
+      notifyConnectivityLocations("CONNECTIVITY_LOCATION",pos_v);
+
+    }
+
   return(true);
   }
 
@@ -309,7 +335,7 @@ void CommunicationAngle::notifyAcousticPath(string name, double angle, double lo
     // given format: string containing your answer, and your email for identifation. In case no direct path exists, the published values in ACOUSTIC_PATH must be specified as NaN.
 
   // taking loss as negative in Iterate() if there is no path
-  if(loss < 0 && false){
+  if(loss < 0){
     double f1 = nan("-1");
     Notify(name,"elev_angle=" + to_string(f1) + ",transmission_loss=" + to_string(f1) + ",id=simensov@mit.edu");
   } 
@@ -344,7 +370,7 @@ void CommunicationAngle::notifyConnectivityLocations(string name, Point p)
 // @return    nothing
 void CommunicationAngle::adjustTheta(Point pos_c, Point center)
 {
-
+  // angle of transmission is perpendicular to line from sound source to center of circle  
   Line sourceToCenter(pos_c,center);
 
   if(pos_c.getX() > m_v_nav_x){
@@ -363,5 +389,57 @@ void CommunicationAngle::adjustTheta(Point pos_c, Point center)
   else if (m_theta0 < -2*M_PI){
     m_theta0 += 2*M_PI;
   }
+
+}
+
+Point CommunicationAngle::findNewLocation()
+{
+  // using a very naive strategy: look for a new position assuming that the vehicle can move straight up towards the surface
+  // if no position is found, start closing in on the horizontal.
+
+  double current_x = m_v_nav_x;
+  double current_z = m_v_nav_depth;
+  double current_zmax = m_z_max;
+  double current_radius = m_radius;
+  double virtualHeight = m_surface_sound_speed/m_sound_speed_gradient;
+
+  Point pos_new(current_x,current_z);
+  Point pos_c(m_c_nav_x,m_c_nav_depth);
+
+  while(current_zmax >= m_water_depth && (m_c_nav_x - current_x) > 0.01){
+
+    if(debug)
+      cout << "Looking for new position" << endl;
+
+    // start looking higher in the water
+    if(current_z > 10){
+      current_z = current_z * 0.95;
+
+    } else {
+      // start looking horizontally
+      if(m_c_nav_x > current_x){
+        // we are in behind, we must increase the horizontal position
+        // increase a certain amount of the remaining distance
+        current_x += 0.05 * (m_c_nav_x - current_x);
+      }
+      else{
+        // we are in front, and have to reduce the 
+        current_x -= 0.05 * (m_c_nav_x - current_x);
+      }
+    }
+
+    // after the while loop has terminated, we make the point and 
+
+    pos_new = Point(current_x,current_z);
+    Line chordline(pos_c,pos_new);
+    current_radius = chordline.circleRadius(-virtualHeight);
+    current_zmax = current_radius - virtualHeight;
+  }
+
+  // after the while loop has terminated, we find 
+  notifyConnectivityLocations("CONNECTIVITY_LOCATION",pos_new);
+
+  cout << "New suggestion: " << pos_new.printPoint() << endl;
+
 
 }

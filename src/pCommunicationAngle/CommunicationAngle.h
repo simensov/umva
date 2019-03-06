@@ -22,7 +22,7 @@
 #include <string>
 #include <vector>
 
-#include "Geometry.h" // Point and Line objectsm
+#include "Geometry.h" // Point and Line objects
 
 using namespace std;
 
@@ -32,20 +32,20 @@ class CommunicationAngle : public CMOOSApp
    CommunicationAngle();
    ~CommunicationAngle();
 
- protected: // Standard MOOSApp functions to overload  
+ protected:
+   // standard MOOSApp functions to overload  
    bool OnNewMail(MOOSMSG_LIST &NewMail);
    bool Iterate();
    bool OnConnectToServer();
    bool OnStartUp();
 
+   // tools
    double soundSpeed(double depth) const;
    double transmissionLoss() const;
    void notifyAcousticPath(string name, double angle, double loss);
    void notifyConnectivityLocations(string name, Point p);
    void adjustTheta(Point pos_c, Point center);
-
-   // some logical test on Geometry and depth
-   // some recalculating of needed horizontal position
+   Point findNewLocation();
 
  protected:
    void RegisterVariables();
@@ -79,9 +79,6 @@ class CommunicationAngle : public CMOOSApp
 
    double m_radius;
    double m_z_max;
-
-   string m_path_name;
-   string m_conn_loc_name;
 };
 
 #endif 

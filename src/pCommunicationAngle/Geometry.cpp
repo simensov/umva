@@ -54,34 +54,34 @@ double Line::length() const {
 // @edits     m_theta: the angle of the line
 // @return    nothing
 void Line::setAngle(){
-  // remember: FIRST quadrant is down, right in cartesian coord syst since theta is defined positive down from horizon, clockwise
+  // FIRST quadrant is down, right in cartesian coord syst since theta is defined positive down from horizon, clockwise. this function is set to never let theta be negative!
 
   // if x-vals are not the same - get angle through arctan
   double dz = m_p2.getZ() - m_p1.getZ();
   double dx = m_p2.getX() - m_p1.getX();
 
   // check for dx = 0. if they are equal, two cases are treated later
-  if(dx){
-    // adjust for which quadrant we are in by assuming first point is always in the first quadrant so that it can be used as reference
+  if(dx != 0){
 
-    if(dz < 0){
-      // first point is DEEPER than second (hence larger z-val)
-      if(dx < 0){
-        // second point is BEHIND first (hence lower x-val)
+    if(dz < 0){       // first point is DEEPER than second (hence larger z-val)
+      if(dx < 0){     // second point is BEHIND first (third quad)
         m_theta = M_PI + atan(dz / dx);
-      } else {
-        // second point is in FRONT, but not as deep
-        m_theta = -atan(abs(dz) / abs(dx));
+      } else {        // second point is in FRONT, but not as deep (4. quad)
+        m_theta = 2*M_PI - atan(abs(dz) / abs(dx));
+      }
+    } else {
+      if(dx < 0){     // 2. quad
+        m_theta = M_PI - atan(abs(dz) / abs(dx));
+      } else {        // everyting is positive - first quadrant
+        m_theta = atan(dz / dx);
       }
     }
   }
-  else{
-    // if x2 = x1 and second point is deeper than first - 90 degrees
+  else{ // if x2 = x1: we are at 90 or 270 degrees
     if(m_p2.getZ() > m_p1.getZ()){
       m_theta = M_PI/2;
     }
     else{
-      // 270 degrees
       m_theta = 3*M_PI/2;
     }
   }
@@ -112,21 +112,31 @@ Point Line::midpoint() const {
 // @return    a Point object representing the circle center
 Point Line::circleCenter(double z_end) const {
   Point midpt = midpoint();
+
+  // m_theta has been calculated to be strictly positive
   double dx = tan(m_theta) * ( midpt.getZ() + abs(z_end));
 
-  Point p2( midpt.getX() + dx, z_end);
+  if(midpt.getX() > m_p1.getX()){
+    // midpoint to the right of the starting: add dx
+    dx = tan(m_theta) * ( midpt.getZ() + abs(z_end));
+  }
+  else{
+    // midpoint is to the left of starting point: subtract dx
+    // dx = tan(m_theta) * ( midpt.getZ() + abs(z_end));
+  }
 
+  Point p2( midpt.getX() + dx, z_end);
   return(p2);
 }
 
 //---------------------------------------------------------
-// Procedure: getCircleRadius
+// Procedure: circleRadius
 // PURPOSE:   calculates the radius of the circle made from using self as 
 //            chordline 
 // @param     z_end: the z-position of the circle center 
 // @edits     no edits
 // @return    a double representing the radius
-double Line::getCircleRadius(double z_end) const {
+double Line::circleRadius(double z_end) const {
   Line l(m_p1,circleCenter(z_end));
   return(l.length());
 }

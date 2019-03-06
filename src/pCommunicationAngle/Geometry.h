@@ -52,7 +52,7 @@ class Line
 
       // accessors
       double getAngle()                      const {return(m_theta);};
-      double getCircleRadius(double z_end)   const;
+      double circleRadius(double z_end)   const;
 
       // tools
       double length()   const;
