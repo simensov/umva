@@ -1,0 +1,151 @@
+//--------    FILE: bravo_loiter_dbl.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   LOITER_REGION=west
+
+Behavior = BHV_Loiter
+{
+  // This behaviour is specific to assignment 4, lab 7
+
+
+  // General Behavior Parameters
+  // ---------------------------
+  name         = first               
+  pwt          = 100      // default
+  duration     = 150      // set according to assignment 3, lab7
+  duration_idle_decay = false
+
+  condition = RETURN = false
+  condition = DEPLOY = true
+  condition = LOITER_REGION=west
+
+  // endflag   = RETURN = true
+  endflag   = LOITER_REGION=east
+
+  updates      = LOITER_WEST_UPDATES
+  perpetual  = true     
+
+  // Parameters specific to this behavior
+  // ------------------------------------
+      acquire_dist = 10               // default
+    capture_radius = 3                // default  
+   center_activate = false            // default
+         clockwise = false            // changes to false for c-clockwise
+       slip_radius = 15               // default
+             speed = 2.5              // default
+     spiral_factor = -2               // default
+
+           polygon = format=radial, x=100,y=-75,radius=30,pts=8 
+       post_suffix = PARTYMAKER                            
+
+    // not needed if polygon is set correctly. kept for later reference 
+    // center_assign = 40,50       
+    // xcenter_assign = 100        
+    // ycenter_assign = -75
+
+
+      visual_hints = vertex_size  = 1             // default
+      visual_hints = edge_size    = 1             // default
+      visual_hints = vertex_color = dodger_blue   // default
+      visual_hints = edge_color   = white         // default
+      visual_hints = nextpt_color = yellow        // default
+      visual_hints = nextpt_lcolor = aqua         // default
+      visual_hints = nextpt_vertex_size = 5       // default
+      visual_hints = label        = largepoly         // example
+}
+
+//----------------------------------------------
+
+Behavior = BHV_Loiter
+{
+  // This behaviour is specific to assignment 4, lab 7
+
+
+  // General Behavior Parameters
+  // ---------------------------
+  name         = second               
+  pwt          = 100                   // default
+  duration     = 150      // set according to assignment 3, lab7
+  duration_idle_decay = false
+
+
+  condition = RETURN = false
+  condition = DEPLOY = true
+  condition = LOITER_REGION=east
+
+  // endflag   = RETURN = true
+  endflag   = LOITER_REGION=west
+
+  updates      = LOITER_EAST_UPDATES 
+  perpetual  = true     
+
+  // Parameters specific to this behavior
+  // ------------------------------------
+      acquire_dist = 10               // default
+    capture_radius = 3                // default  
+   center_activate = false            // default
+         clockwise = false            // changes to false for c-clockwise
+       slip_radius = 15               // default
+             speed = 2.5              // default
+     spiral_factor = -2               // default
+
+           polygon = format=radial, x=160,y=-50,radius=20,pts=8 
+       post_suffix = PARTYSHAKER                            
+
+    // not needed if polygon is set correctly. kept for later reference 
+    // center_assign = 40,50       
+    // xcenter_assign = 100        
+    // ycenter_assign = -75
+
+
+      visual_hints = vertex_size  = 1             // default
+      visual_hints = edge_size    = 1             // default
+      visual_hints = vertex_color = dodger_blue   // default
+      visual_hints = edge_color   = white         // default
+      visual_hints = nextpt_color = yellow        // default
+      visual_hints = nextpt_lcolor = aqua         // default
+      visual_hints = nextpt_vertex_size = 5       // default
+      visual_hints = label        = small_poly         // example
+}
+
+//----------------------------------------------
+
+
+Behavior=BHV_Waypoint
+{
+  // this behaviour activates when return is true after deploy also has been set to true, which means that we are looking at a behaviour returning after the mission has been active.
+
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  perpetual  = true
+  updates    = RETURN_UPDATE
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+  endflag    = MISSION = complete
+	
+           speed = 2.0
+  capture_radius = 2.0
+     slip_radius = 8.0
+          points = 0,0  // return point in origin
+ }
+
+//----------------------------------------------
+Behavior=BHV_ConstantSpeed
+{
+  name       = const_speed
+  pwt        = 200
+  condition  = SPD=true
+  condition  = DEPLOY = true
+  perpetual  = true
+  updates    = SPEED_UPDATE
+  endflag    = SPD = false
+
+     speed = 0.5
+		 duration = 10
+		 duration_reset = CONST_SPD_RESET=true
+	
+}
+

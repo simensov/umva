@@ -16,6 +16,9 @@ missions/alder/*
 !missions/alder/alder_lab4.moos
 !missions/alder/alder_lab4.bhv
 
+!missions/lab_07/
+
+
 src/pPrimeFactor/MOOSLog*
 src/pPrimeFactor/.LastOpenedMOOSLog*
 

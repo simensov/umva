@@ -15,6 +15,9 @@
 */
 /************************************************************/
 
+// TODO: There seems to be some weird couts from the publishing functions
+// sometimes it prints nan in cases it shouldn't, so the depth check loop probably needs some details
+
 #include <iterator>
 #include "MBUtils.h"
 #include "CommunicationAngle.h"
