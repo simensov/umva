@@ -1,12 +1,14 @@
 /-------------------------------------------------
-// NAME: Simen Sem Oevereng, MIT 2.860 Spring 2019
-// FILE: bravo_loiter_dbl.moos
+// NAME: M. Benjamin, MIT CSAIL
+// FILE: alpha.moos
 //-------------------------------------------------
 
 ServerHost   = localhost
 ServerPort   = 9000
-Community    = bravo_loiter_dbl
-MOOSTimeWarp = 20
+Community    = alpha
+//----  Next Line was commented and replaced with a command line overload ---- //
+//MOOSTimeWarp = 1    (default)
+MOOSTimeWarp = 10
 
 // Forest Lake
 LatOrigin  = 43.825300 
@@ -23,7 +25,7 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB          @ NewConsole = false
-  // Run = pLogger         @ NewConsole = false // TODO: remove comment
+  Run = pLogger         @ NewConsole = false
   Run = uSimMarine	    @ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = false
@@ -98,7 +100,7 @@ ProcessConfig = pHelmIvP
 
   bhv_dir_not_found_ok = true
 
-  behaviors  = bravo_loiter_dbl.bhv
+  behaviors  = alpha.bhv
   domain     = course:0:359:360
   domain     = speed:0:4:41
 }
@@ -181,32 +183,10 @@ ProcessConfig = pMarineViewer
   // left_context[survey-point] = DEPLOY=true
   // left_context[survey-point] = MOOS_MANUAL_OVERRIDE=false
   // left_context[survey-point] = RETURN=false
-  
-
-  // ADDED BY SIMEN IN LAB 7 in the alpha mission
-
-  left_context[return_point] = RETURN_UPDATE = points=$(XPOS),$(YPOS)
-  left_context[return_point]  = VIEW_POINT = x=$(XPOS),y=$(YPOS),label=return_point
-  left_context[return_point]  = RETURN = true
-
-  // ADDED IN ASSIGNMENT 4
-
-  // adds option of choosing small polygon by clicking somewhere
-  left_context[east_loiter] = LOITER_REGION=east
-  left_context[east_loiter] = LOITER_EAST_UPDATES = polygon = format=radial, x=$(XPOS),y=$(YPOS),radius=20,pts=8 
-
-
-  // left_context[east_loiter] = duration_reset = BRAVO_TIMER_RESET=true
-
-  // left_context[view_point]  = VIEW_POINT = x=$(XPOS),y=$(YPOS),label=hello
-  // left_context[view_poly]  = VIEW_POLYGON = format=radial,x=$(XPOS),y=$(YPOS), radius=10, pts=8, edge_size=1,label=mypoly
-  // left_context[view_both]  = # create multiple instances of the same click
-
 
   right_context[return] = DEPLOY=true
   right_context[return] = MOOS_MANUAL_OVERRIDE=false
   right_context[return] = RETURN=false
-
 
   scope  = RETURN
   scope  = WPT_STAT
@@ -238,4 +218,5 @@ ProcessConfig = pNodeReporter
   platform_color  = yellow
   platform_length = 4
 }
+
 

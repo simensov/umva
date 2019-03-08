@@ -1,11 +1,24 @@
-/-------------------------------------------------
-// NAME: Simen Sem Oevereng, MIT 2.860 Spring 2019
-// FILE: bravo_loiter_dbl.moos
 //-------------------------------------------------
+// NAME: Simen Sem Oevereng, MIT 2.860 Spring 2019
+// FILE: bravo_uuv_surface.moos
+// 
+// This file contains the configuration of the deliverable for Lab 7.
+//
+// Together with bravo_uuv_surface.bhv, features have been implemented to:
+//  - Return to a given position that the user can click on
+//  - Loiter within two polygons with 8 points, switching every 150 seconds.
+//    The vessel currently stops each 200 seconds for a 60 second break.
+//  - The east polygon can change location by left-clicking on the map.
+//  - When loitering, the vessel change depth depending on which polygon it 
+//    loiters within
+// 
+//-------------------------------------------------
+
+// TODO: When RETURN=false, the vessel just stops, and does not return
 
 ServerHost   = localhost
 ServerPort   = 9000
-Community    = bravo_loiter_dbl
+Community    = bravo_uuv_surface
 MOOSTimeWarp = 20
 
 // Forest Lake
@@ -23,7 +36,7 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB          @ NewConsole = false
-  // Run = pLogger         @ NewConsole = false // TODO: remove comment
+  // Run = pLogger         @ NewConsole = false // TODO: enable if wanted
   Run = uSimMarine	    @ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = false
@@ -86,6 +99,12 @@ ProcessConfig = uSimMarine
   turn_rate     = 40
   thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
   thrust_reflect = true
+
+  // ADDED IN ASSIGNMENT 5, lab7
+  buoyancy_rate        = 0.15
+  max_depth_rate       = 5
+  max_depth_rate_speed = 2.0
+  default_water_depth  = 400
 }
 
 //------------------------------------------
@@ -98,9 +117,12 @@ ProcessConfig = pHelmIvP
 
   bhv_dir_not_found_ok = true
 
-  behaviors  = bravo_loiter_dbl.bhv
+  behaviors  = bravo_uuv_surface.bhv
   domain     = course:0:359:360
   domain     = speed:0:4:41
+
+  // ADDED IN ASSIGNMENT 5, lab 7
+  domain = depth:0:100:101
 }
 
 //------------------------------------------
@@ -112,7 +134,7 @@ ProcessConfig = pMarinePID
   CommsTick  = 20
 
   verbose       = true
-  depth_control = false
+  depth_control = true // enables uuv missions, given pitch and coupling PID
 
   // SIM_INSTABILITY = 20
 
@@ -128,9 +150,25 @@ ProcessConfig = pMarinePID
   speed_pid_ki		 = 0.0
   speed_pid_integral_limit = 0.07
 
+  //Pitch PID controller
+  pitch_pid_kp                   = 1.5
+  pitch_pid_kd                   = 0.3
+  pitch_pid_ki                   = 0.004
+  pitch_pid_integral_limit       = 0
+
+  //ZPID controller
+  z_to_pitch_pid_kp              = 0.12
+  z_to_pitch_pid_kd              = 0.1
+  z_to_pitch_pid_ki              = 0.004
+  z_to_pitch_pid_integral_limit  = 0.05
+
+
   //MAXIMUMS
   maxrudder    = 100
   maxthrust    = 100
+  maxpitch     = 15
+  maxelevator  = 13
+
 
   // A non-zero SPEED_FACTOR overrides use of SPEED_PID
   // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
@@ -139,7 +177,6 @@ ProcessConfig = pMarinePID
 
 //------------------------------------------
 // pMarineViewer config block
-
 ProcessConfig = pMarineViewer
 {
   AppTick    = 4
@@ -182,31 +219,25 @@ ProcessConfig = pMarineViewer
   // left_context[survey-point] = MOOS_MANUAL_OVERRIDE=false
   // left_context[survey-point] = RETURN=false
   
-
   // ADDED BY SIMEN IN LAB 7 in the alpha mission
 
   left_context[return_point] = RETURN_UPDATE = points=$(XPOS),$(YPOS)
   left_context[return_point]  = VIEW_POINT = x=$(XPOS),y=$(YPOS),label=return_point
   left_context[return_point]  = RETURN = true
+  
 
   // ADDED IN ASSIGNMENT 4
-
   // adds option of choosing small polygon by clicking somewhere
   left_context[east_loiter] = LOITER_REGION=east
   left_context[east_loiter] = LOITER_EAST_UPDATES = polygon = format=radial, x=$(XPOS),y=$(YPOS),radius=20,pts=8 
 
-
-  // left_context[east_loiter] = duration_reset = BRAVO_TIMER_RESET=true
-
-  // left_context[view_point]  = VIEW_POINT = x=$(XPOS),y=$(YPOS),label=hello
-  // left_context[view_poly]  = VIEW_POLYGON = format=radial,x=$(XPOS),y=$(YPOS), radius=10, pts=8, edge_size=1,label=mypoly
-  // left_context[view_both]  = # create multiple instances of the same click
+  // ADDED IN ASSIGNMENT 5
+  vehicles_name_mode = names+depth
 
 
   right_context[return] = DEPLOY=true
   right_context[return] = MOOS_MANUAL_OVERRIDE=false
   right_context[return] = RETURN=false
-
 
   scope  = RETURN
   scope  = WPT_STAT
@@ -234,8 +265,11 @@ ProcessConfig = pNodeReporter
   AppTick    = 2
   CommsTick	 = 2
 
-  platform_type   = kayak
+  // platform_type   = kayak
   platform_color  = yellow
   platform_length = 4
+
+  // ADDED IN ASSIGNMENT 5, lab7
+  platform_type = UUV
 }
 

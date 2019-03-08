@@ -1,4 +1,4 @@
-//--------    FILE: bravo_loiter_dbl.bhv   -------------
+//--------    FILE: bravo_loiter_uuv.bhv   -------------
 
 initialize   DEPLOY = false
 initialize   RETURN = false
@@ -19,10 +19,9 @@ Behavior = BHV_Loiter
   condition = DEPLOY = true
   condition = LOITER_REGION=west
 
-  // endflag   = RETURN = true
   endflag   = LOITER_REGION=east
 
-  updates      = LOITER_WEST_UPDATES
+  updates    = LOITER_WEST_UPDATES
   perpetual  = true     
 
   // Parameters specific to this behavior
@@ -38,20 +37,14 @@ Behavior = BHV_Loiter
            polygon = format=radial, x=100,y=-75,radius=30,pts=8 
        post_suffix = PARTYMAKER                            
 
-    // not needed if polygon is set correctly. kept for later reference 
-    // center_assign = 40,50       
-    // xcenter_assign = 100        
-    // ycenter_assign = -75
-
-
-      visual_hints = vertex_size  = 1             // default
-      visual_hints = edge_size    = 1             // default
-      visual_hints = vertex_color = dodger_blue   // default
-      visual_hints = edge_color   = white         // default
-      visual_hints = nextpt_color = yellow        // default
-      visual_hints = nextpt_lcolor = aqua         // default
-      visual_hints = nextpt_vertex_size = 5       // default
-      visual_hints = label        = largepoly         // example
+    visual_hints = vertex_size  = 1             // default
+    visual_hints = edge_size    = 1             // default
+    visual_hints = vertex_color = dodger_blue   // default
+    visual_hints = edge_color   = white         // default
+    visual_hints = nextpt_color = yellow        // default
+    visual_hints = nextpt_lcolor = aqua         // default
+    visual_hints = nextpt_vertex_size = 5       // default
+    visual_hints = label        = largepoly         // example
 }
 
 //----------------------------------------------
@@ -60,7 +53,6 @@ Behavior = BHV_Loiter
 {
   // This behaviour is specific to assignment 4, lab 7
 
-
   // General Behavior Parameters
   // ---------------------------
   name         = second               
@@ -68,15 +60,13 @@ Behavior = BHV_Loiter
   duration     = 150      // set according to assignment 3, lab7
   duration_idle_decay = false
 
-
   condition = RETURN = false
   condition = DEPLOY = true
   condition = LOITER_REGION=east
 
-  // endflag   = RETURN = true
   endflag   = LOITER_REGION=west
 
-  updates      = LOITER_EAST_UPDATES 
+  updates    = LOITER_EAST_UPDATES 
   perpetual  = true     
 
   // Parameters specific to this behavior
@@ -92,20 +82,14 @@ Behavior = BHV_Loiter
            polygon = format=radial, x=160,y=-50,radius=20,pts=8 
        post_suffix = PARTYSHAKER                            
 
-    // not needed if polygon is set correctly. kept for later reference 
-    // center_assign = 40,50       
-    // xcenter_assign = 100        
-    // ycenter_assign = -75
-
-
-      visual_hints = vertex_size  = 1             // default
-      visual_hints = edge_size    = 1             // default
-      visual_hints = vertex_color = dodger_blue   // default
-      visual_hints = edge_color   = white         // default
-      visual_hints = nextpt_color = yellow        // default
-      visual_hints = nextpt_lcolor = aqua         // default
-      visual_hints = nextpt_vertex_size = 5       // default
-      visual_hints = label        = small_poly         // example
+    visual_hints = vertex_size  = 1             // default
+    visual_hints = edge_size    = 1             // default
+    visual_hints = vertex_color = dodger_blue   // default
+    visual_hints = edge_color   = white         // default
+    visual_hints = nextpt_color = yellow        // default
+    visual_hints = nextpt_lcolor = aqua         // default
+    visual_hints = nextpt_vertex_size = 5       // default
+    visual_hints = label        = small_poly         // example
 }
 
 //----------------------------------------------
@@ -148,3 +132,53 @@ Behavior=BHV_ConstantSpeed
 	
 }
 
+
+//----------------------------------------------
+
+Behavior = BHV_ConstantDepth
+{
+ // General Behavior Parameters
+ // ---------------------------
+ name         = const_dep_west   // set
+ pwt          = 100                // default
+
+ // don't use 'condition = RETURN=false' as this messes up waypt_return
+ condition    = DEPLOY=true
+ condition    = LOITER_REGION=west
+
+ updates      = CONST_DEP_UPDATES_WEST  // set
+
+ // Parameters specific to this behavior
+ // ------------------------------------
+          basewidth = 100          // default
+              depth = 30            // set
+ depth_mismatch_var = DEPTH_DIFF   // example
+           duration = no-time-limit             // set
+          peakwidth = 3            // default
+        summitdelta = 50           // default
+}
+
+//----------------------------------------------
+
+Behavior = BHV_ConstantDepth
+{
+ // General Behavior Parameters
+ // ---------------------------
+ name         = const_dep_east   // set
+ pwt          = 100                // default
+ 
+ // don't use 'condition = RETURN=false' as this messes up waypt_return
+ condition    = DEPLOY=true
+ condition    = LOITER_REGION=east
+
+ updates      = CONST_DEP_UPDATES_EAST  // set
+
+ // Parameters specific to this behavior
+ // ------------------------------------
+          basewidth = 100          // default
+              depth = 10            // set
+ depth_mismatch_var = DEPTH_DIFF   // example
+           duration = no-time-limit             // set
+          peakwidth = 3            // default
+        summitdelta = 50           // default
+}

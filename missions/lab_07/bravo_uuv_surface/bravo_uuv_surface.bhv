@@ -1,0 +1,261 @@
+//-------------------------------------------------
+// NAME: Simen Sem Oevereng, MIT 2.860 Spring 2019
+// FILE: bravo_uuv_surface.bhv
+// 
+// This file contains the configuration of the deliverable for Lab 7.
+//
+// Together with bravo_uuv_surface.moos, features have been implemented to:
+//  - Return to a given position that the user can click on
+//  - Loiter within two polygons with 8 points, switching every 150 seconds.
+//    The vessel currently stops each 200 seconds for a 60 second break.
+//  - The east polygon can change location by left-clicking on the map.
+//  - When loitering, the vessel change depth depending on which polygon it 
+//    loiters within
+// 
+//-------------------------------------------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   LOITER_REGION=west
+initialize   WAIT_REQUEST=false
+
+Behavior = BHV_Loiter
+{
+  // This behaviour is specific to assignment 4, lab 7
+
+  // General Behavior Parameters
+  // ---------------------------
+  name         = first               
+  pwt          = 100   
+  duration     = 150      // set according to assignment 3, lab7
+  duration_idle_decay = false
+
+  condition = RETURN=false
+  condition = DEPLOY=true
+  condition = LOITER_REGION=west
+
+  endflag   = LOITER_REGION=east
+
+  updates    = LOITER_WEST_UPDATES
+  perpetual  = true     
+
+  // Parameters specific to this behavior
+  // ------------------------------------
+      acquire_dist = 10               
+    capture_radius = 3                 
+   center_activate = false           
+         clockwise = false // changes to false for c-clockwise
+       slip_radius = 15               
+             speed = 2.5              
+     spiral_factor = -2               
+
+           polygon = format=radial, x=100,y=-75,radius=30,pts=8 
+       post_suffix = PARTYMAKER                            
+
+    visual_hints = vertex_size  = 1          
+    visual_hints = edge_size    = 1            
+    visual_hints = vertex_color = dodger_blue   
+    visual_hints = edge_color   = white        
+    visual_hints = nextpt_color = yellow  
+    visual_hints = nextpt_lcolor = aqua        
+    visual_hints = nextpt_vertex_size = 5    
+    visual_hints = label = largepoly
+}
+
+//----------------------------------------------
+
+Behavior = BHV_Loiter
+{
+  // This behaviour is specific to assignment 4, lab 7
+
+  // General Behavior Parameters
+  // ---------------------------
+  name         = second               
+  pwt          = 100
+  duration     = 150      // set according to assignment 3, lab7
+  duration_idle_decay = false
+
+  condition = RETURN = false
+  condition = DEPLOY = true
+  condition = LOITER_REGION=east
+
+  endflag   = LOITER_REGION=west
+
+  updates    = LOITER_EAST_UPDATES 
+  perpetual  = true     
+
+  // Parameters specific to this behavior
+  // ------------------------------------
+      acquire_dist = 10
+    capture_radius = 3 
+   center_activate = false 
+         clockwise = false  // changes to false for c-clockwise
+       slip_radius = 15
+             speed = 2.5 
+     spiral_factor = -2 
+
+           polygon = format=radial, x=160,y=-50,radius=20,pts=8 
+       post_suffix = PARTYSHAKER                            
+
+    visual_hints = vertex_size  = 1
+    visual_hints = edge_size    = 1 
+    visual_hints = vertex_color = dodger_blue
+    visual_hints = edge_color   = white 
+    visual_hints = nextpt_color = yellow
+    visual_hints = nextpt_lcolor = aqua
+    visual_hints = nextpt_vertex_size = 5 
+    visual_hints = label = small_poly 
+}
+
+//----------------------------------------------
+// Decides waypoint when RETURN=true has been triggered after deploy also has
+// been set to true, which means that we are looking at a behaviour returning
+// after the mission has been active.
+Behavior=BHV_Waypoint
+{
+
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  perpetual  = true
+  updates    = RETURN_UPDATE
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+  endflag    = MISSION = complete
+  
+           speed = 2.0
+  capture_radius = 2.0
+     slip_radius = 8.0
+          points = 0,0
+ }
+
+//----------------------------------------------
+Behavior=BHV_ConstantSpeed
+{
+  name       = const_speed
+  pwt        = 200
+  condition  = SPD=true
+  condition  = DEPLOY = true
+  perpetual  = true
+  updates    = SPEED_UPDATE
+  endflag    = SPD = false
+
+     speed = 0.5
+		 duration = 10
+		 duration_reset = CONST_SPD_RESET=true
+}
+
+
+//----------------------------------------------
+// Behaviour set specifically for loitering in the west polygon
+Behavior = BHV_ConstantDepth
+{
+ // General Behavior Parameters
+ // ---------------------------
+ name         = const_dep_west 
+ pwt          = 100  
+
+ // don't use 'condition = RETURN=false' as this messes up waypt_return
+ condition    = DEPLOY=true
+ condition    = LOITER_REGION=west
+
+ updates      = CONST_DEP_UPDATES_WEST 
+
+ // Parameters specific to this behavior
+ // ------------------------------------
+          basewidth = 100 
+              depth = 30 
+ depth_mismatch_var = DEPTH_DIFF 
+           duration = no-time-limit
+          peakwidth = 3 
+        summitdelta = 50 
+}
+
+//----------------------------------------------
+// Behaviour set specifically for loitering in the east polygon
+
+Behavior = BHV_ConstantDepth
+{
+ // General Behavior Parameters
+ // ---------------------------
+ name         = const_dep_east 
+ pwt          = 100   
+ 
+ // don't use 'condition = RETURN=false' as this messes up waypt_return
+ condition    = DEPLOY=true
+ condition    = LOITER_REGION=east
+
+ updates      = CONST_DEP_UPDATES_EAST
+
+ // Parameters specific to this behavior
+ // ------------------------------------
+          basewidth = 100 
+              depth = 10 
+ depth_mismatch_var = DEPTH_DIFF 
+           duration = no-time-limit  
+          peakwidth = 3 
+        summitdelta = 50  
+}
+
+//----------------------------------------------
+// Timer for tracking the 200 seconds between each stop
+// Renaming "waiting" to "timing" and "timed" variables in this setting
+Behavior = BHV_Timer
+{
+ // General Behavior Parameters
+ // ---------------------------
+ name         = bhv_timer_1  
+
+ condition    = DEPLOY=true
+ condition    = RETURN=false
+ condition    = WAIT_REQUEST=false
+
+ duration     = 200
+ duration_idle_decay = false
+ 
+ idleflag     = TIMING=false  
+ runflag      = TIMING=true
+ runflag      = TIMED=false
+
+ endflag      = TIMED=true
+ endflag      = DEPLOY=false
+ endflag      = WAIT_REQUEST=true
+
+ updates      = TIMER_UPDATES
+
+ perpetual = true
+
+}
+
+
+//----------------------------------------------
+// Timer for timing all the pauses where vessel ascends to surface 
+// Using "waiting" and "waited" variables in this setting
+Behavior = BHV_Timer
+{
+ // General Behavior Parameters
+ // ---------------------------
+ name         = bhv_timer_2
+
+ condition    = DEPLOY=false
+ condition    = RETURN=false
+ condition    = WAIT_REQUEST=true
+
+ duration     = 60    
+ duration_idle_decay = false             
+ 
+ idleflag     = WAITING=false       
+ runflag      = WAITING=true        
+ runflag      = WAITED=false         
+
+ // we don't need runflags or active flags to make depth go to 0 since ConstantDepth behavior deals with that
+
+ endflag      = WAITED=true         
+ endflag      = DEPLOY=true
+ endflag      = WAIT_REQUEST=false
+
+ updates      = WAITER_UPDATES  
+
+ perpetual = true     
+}
