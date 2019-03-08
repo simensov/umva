@@ -33,7 +33,6 @@ const bool debug = true;
 
 CommunicationAngle::CommunicationAngle()
 {
-  m_first_reading            = true;
   m_initiated                = false;
   m_surface_sound_speed      = 0;
   m_sound_speed_gradient     = 0.001; // avoids dividing by zero
@@ -70,8 +69,7 @@ CommunicationAngle::~CommunicationAngle()
 // PURPOSE:   react to subscribed mails sent from (preferably) another MOOSApp 
 // @param     NewMail: a MOOSMSG_LIST type variable,
 //            containing all information published from other MOOSApps
-// @edits     m_current_prime, m_received_primes, m_all_entries,
-//            m_first_reading
+// @edits     
 // @return    true
 bool CommunicationAngle::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -167,10 +165,60 @@ double CommunicationAngle::soundSpeed(double depth) const {
 // @param     no inputs 
 // @edits     no edits
 // @return    a double representing the transmission loss
-double CommunicationAngle::transmissionLoss() const {
-  return(0.0);
-}
 
+//   Purpose: Calculates the transmissionloss of a ray sent from our vehicle   //            to the collaborator, given a radius of the circle for which the //            sound speed travels along iẗ́̈́̈́'s arc and the angle the ray is //            sent. 
+//     Input: The radius of the circle and the angle the sound is sent
+//   Returns: The transmissionloss for the soundray. 
+double CommunicationAngle::transmissionLoss() const
+{
+  if(false){
+    // Calculates the soundspeed at the transmitter and receiver positions
+
+    // SWITCH THESE???
+    double sound_speed_transmitter = soundSpeed(m_c_nav_depth);
+    double sound_speed_receiver = soundSpeed(m_v_nav_depth);
+
+    cout << "speeds: " << sound_speed_transmitter << " - " << sound_speed_receiver << endl;
+
+    // Calculates the angle of receiving
+    double theta_received = acos( cos(m_theta0) * sound_speed_receiver/sound_speed_transmitter);
+
+    cout << "theta rec: " << theta_received << endl;
+
+    // This parameter implies how much the sound spread in the water
+    double d_theta = 0.001;
+
+    // Calculates the length of the trajectory the sound travels along
+    double arclength = m_radius * (m_theta0 - theta_received);
+
+    cout << "arcl: " << arclength << endl;
+
+    // Calculates the length to two x- positions which defines how the sound travels
+    double r_1 = m_radius*(sin(m_theta0) + sin(arclength/m_radius - m_theta0));
+    double r_2 = m_radius*(sin(m_theta0 + d_theta) + sin(arclength/m_radius - m_theta0 - d_theta));
+
+    // Calculates the area of pressure from the sound at the area around the receiver
+    double j_area = (r_1/sin(theta_received))*((r_2 - r_1)/d_theta);
+
+    cout << "Area j: " << j_area << endl;
+
+    // Calculates the pressure loss
+    double p_s = (1/4*M_PI)*sqrt(abs((cos(m_theta0)*sound_speed_receiver)/(sound_speed_transmitter*j_area)));
+    double p_1 = (1/4*M_PI);
+
+    cout << "P values: " << p_s << " - " << p_1 << endl;
+
+    // Returns the transmission loss
+    double loss = -20*log10(p_s/p_1);
+    cout << "returning: " << loss << endl;
+
+    return(loss);
+
+  } else{
+    return(0.0);
+  }
+
+ }
 
 //---------------------------------------------------------
 // Procedure: Iterate()
@@ -201,7 +249,7 @@ bool CommunicationAngle::Iterate()
 
     Point center = chordline.circleCenter(-virtualHeight);
 
-    if(debug){
+    if(false){
       cout << "C pos: " << pos_c.printPoint() << " - V pos: " << pos_v.printPoint() << " - Center pos: " << center.printPoint() << " - R: " << m_radius << endl;
     }
 
@@ -211,6 +259,7 @@ bool CommunicationAngle::Iterate()
 
     adjustTheta(pos_c, center);
     m_z_max = m_radius - m_surface_sound_speed / m_sound_speed_gradient;
+    
     double t_loss = transmissionLoss();
 
     if(m_z_max >= m_water_depth){
@@ -446,3 +495,4 @@ Point CommunicationAngle::findNewLocation()
 
 
 }
+

@@ -50,7 +50,6 @@ class CommunicationAngle : public CMOOSApp
  protected:
    void RegisterVariables();
 
-   bool m_first_reading;
    bool m_initiated;
 
    // Config var

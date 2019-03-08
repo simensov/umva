@@ -34,6 +34,9 @@ Behavior = BHV_Loiter
   condition = DEPLOY=true
   condition = LOITER_REGION=west
 
+  // extra points
+  // condition = WAIT_REQUEST=false
+
   endflag   = LOITER_REGION=east
 
   updates    = LOITER_WEST_UPDATES
@@ -78,6 +81,9 @@ Behavior = BHV_Loiter
   condition = RETURN = false
   condition = DEPLOY = true
   condition = LOITER_REGION=east
+
+  // extra points
+  // condition = WAIT_REQUEST=false
 
   endflag   = LOITER_REGION=west
 
@@ -192,7 +198,7 @@ Behavior = BHV_ConstantDepth
  // ------------------------------------
           basewidth = 100 
               depth = 10 
- depth_mismatch_var = DEPTH_DIFF 
+ depth_mismatch_var = DEPTH_DIFF
            duration = no-time-limit  
           peakwidth = 3 
         summitdelta = 50  
@@ -219,7 +225,8 @@ Behavior = BHV_Timer
  runflag      = TIMED=false
 
  endflag      = TIMED=true
- endflag      = DEPLOY=false
+ endflag      = TIMING=false
+ endflag      = DEPLOY=false  // necessary?
  endflag      = WAIT_REQUEST=true
 
  updates      = TIMER_UPDATES
@@ -241,6 +248,7 @@ Behavior = BHV_Timer
  condition    = DEPLOY=false
  condition    = RETURN=false
  condition    = WAIT_REQUEST=true
+ condition    = NAV_DEPTH=0
 
  duration     = 60    
  duration_idle_decay = false             
@@ -251,7 +259,8 @@ Behavior = BHV_Timer
 
  // we don't need runflags or active flags to make depth go to 0 since ConstantDepth behavior deals with that
 
- endflag      = WAITED=true         
+ endflag      = WAITED=true   
+ endflag      = WAITING=false      
  endflag      = DEPLOY=true
  endflag      = WAIT_REQUEST=false
 
