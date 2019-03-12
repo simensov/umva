@@ -5,8 +5,8 @@
 //  - all couts are supressed
 //  - uTimerScript is not running and publishing
 //  - pCommunicationAngle is run by pAntler
-//ServerHost = 18.38.2.158
-//ServerPort = 9011 
+ServerHost = 18.38.2.158
+ServerPort = 9011 
 
 //ServerHost = localhost
 //ServerPort = 9000
@@ -17,11 +17,9 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB @ NewConsole = false 
-  // Run = pCommunicationAngle @ NewConsole = false 
-  // Run = uXMS  @ NewConsole = false
-  Run = uTimerScript @NewConsole = false
+  Run = pCommunicationAngle @ NewConsole = false 
+  //Run = uTimerScript @NewConsole = false
 }
-
 
 ProcessConfig = pCommunicationAngle
 {
@@ -34,13 +32,6 @@ ProcessConfig = pCommunicationAngle
    time_interval=1
 }
 
-ProcessConfig = uXMS
-{
-   AppTick   = 4
-   CommsTick = 4
-}
-
-
 ProcessConfig = uTimerScript
 {
   AppTick   = 4
@@ -48,6 +39,7 @@ ProcessConfig = uTimerScript
 
   paused = false
 
+  // These are all used to test locally 
   event  = var=VEHICLE_NAME,     val="SPERMWHALE",    time=1
   event  = var=NAV_X,     val=0,    time=1.1
   event  = var=NAV_Y,     val=0,      time=1.2

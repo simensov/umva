@@ -9,7 +9,7 @@
 
       This file contains the a support classes, Point and
       Line, to the implementation of lab 6, in which the
-      goal was to calculate transmission angle and loss 
+      goal was to calculate transmission angle and -loss 
       between two underwater vehicles trying to communicate.
 */
 /************************************************************/
@@ -53,6 +53,7 @@ double Line::length() const {
 // @edits     m_theta: the angle of the line
 // @return    nothing
 void Line::setAngle(){
+  // NB:::::::::
   // FIRST quadrant is down, right in cartesian coord syst since theta is defined positive down from horizon, clockwise. this function is set to never let theta be negative! Note that this convention for theta is along the lines of the one defined in pictures in the lab, but is returned with opposite sign when publishing the elevation angle in CommunicationAngle.h
 
   // if x-vals are not the same - get angle through arctan
@@ -108,24 +109,8 @@ Point Line::midpoint() const {
 // @return    a Point object representing the circle center
 Point Line::circleCenter(double z_end) const {
   Point midpt = midpoint();
-
   // m_theta has been calculated to be strictly positive
   double dx = tan(m_theta) * ( midpt.getZ() + abs(z_end));
-
-  // UPDATE: since angle can be negative, this will be reflected in tan
-  // Letting it stay in the code for later reference though
-  // controlling relative position in the horizontal direction
-  /*
-  if(midpt.getX() > m_p1.getX()){
-    // midpoint to the right of the starting: add dx
-    dx = tan(m_theta) * ( midpt.getZ() + abs(z_end));
-  }
-  else{
-    // midpoint is to the left of starting point: subtract dx
-    // dx = tan(m_theta) * ( midpt.getZ() + abs(z_end));
-  }
-  */
-
   Point p2( midpt.getX() + dx, z_end);
   return(p2);
 }

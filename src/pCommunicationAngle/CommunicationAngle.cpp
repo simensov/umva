@@ -8,26 +8,37 @@
       Declarations in CommunicationAngle.h.
 
       This file contains the implementation of lab 6, in 
-      which the goal was to calculate transmission angle 
-      and loss between two underwater vehicles trying
-      to communicate.
+      which the goal was to calculate a transmission
+      angle and -loss from the transmitter on "our" vehicle,
+      in order to send a signal to communicate with a 
+      collaborating underwater vehicle.
 
 */
 /************************************************************/
 
 #include <iterator>
 #include "MBUtils.h"
-#include "CommunicationAngle.h"
+#include "CommunicationAngle.h" // string, vector and Geometry.h: math.h
 
 #include <iomanip> // for cout << std::setprecision(2) << std::fixed
 
 using namespace std;
 
-const bool debug = true;
+//---------------------------------------------------------
+// Procedure: constrainRadian
+// PURPOSE:   wraps an angle within pi and -pi
+// @param     x: a radian 
+// @edits     no edits: not a member function
+// @return    a radian within -pi and pi
+double constrainRadian(double x){
+    x = fmod(x + M_PI,2*M_PI);
+    if (x < 0)
+        x += 2*M_PI;
+    return x - M_PI;
+}
 
 //---------------------------------------------------------
 // Constructor
-
 CommunicationAngle::CommunicationAngle()
 {
   m_initiated                = false;
@@ -127,10 +138,9 @@ bool CommunicationAngle::OnNewMail(MOOSMSG_LIST &NewMail)
     bool c_init = (m_c_nav_x != -1 && m_c_nav_y != -1 && m_c_nav_depth != -1 && m_c_nav_heading != -1 && m_c_nav_speed != -1);
 
     if(v_init && c_init && !m_initiated){
-      cout << "VEHICLE VARIABLES INITIATED" << endl;
+      // cout << "VEHICLE VARIABLES INITIATED" << endl;
       m_initiated = true;
     }
-
 
    } // for all mail
   
@@ -155,7 +165,6 @@ double CommunicationAngle::soundSpeed(double depth) const {
   return(m_surface_sound_speed + m_sound_speed_gradient * depth);
 }
 
-
 //---------------------------------------------------------
 // Procedure: transmissionLoss
 // PURPOSE:   calculates the transmission loss of the sound signal along a 
@@ -171,10 +180,13 @@ double CommunicationAngle::transmissionLoss() const
 
     // Find relevant sound speeds to find angle at receiver and the arclength
     double c_collaborator = soundSpeed(m_c_nav_depth);
-
     double c_vehicle = soundSpeed(m_v_nav_depth);
+    double dx = m_c_nav_x - m_v_nav_x;
+    double dy = m_c_nav_y - m_v_nav_y;
+    double dz = m_c_nav_depth - m_v_nav_depth;
+    double dr = sqrt(dx*dx + dy*dy);
 
-    double theta_c = acos( cos(m_theta0) * c_vehicle/c_collaborator);
+    double theta_c = acos( cos(m_theta0) * c_collaborator/c_vehicle );
 
     double arclength = m_radius * (m_theta0 + theta_c);
 
@@ -189,7 +201,7 @@ double CommunicationAngle::transmissionLoss() const
     double J = (r1/sin(theta_c))*((r2 - r1)/d_theta);
 
     // Calculates the pressure loss
-    double ps = (0.25*M_PI)*sqrt(abs((cos(m_theta0)*c_vehicle)/(c_collaborator*J)));
+    double ps = (0.25*M_PI)*sqrt(abs((cos(m_theta0) * c_collaborator)/(c_vehicle*J)));
     double p1 = (0.25*M_PI);
 
     // Returns the transmission loss
@@ -249,17 +261,22 @@ bool CommunicationAngle::Iterate()
 
       // Using pythagoras to see if we could be closer to source than the point where the circle hits the seabed. Remember that our horizontal position will always be less than collaborator's in r,z-plane
       bool ok = false;
-
+      
       if(pos_c.getZ() > pos_v.getZ()){
-        // We are above collaborator and have to check if it lies on the circular arc BEFORE it hits the seabed. If it is, then there exists a path.
+        // We are above collaborator and have to check if it lies on the circular arc to the left of where it is hitting the seabed. If it is, then there exists a path.
+
         double x_pos_circle_hits_bottom = center.getX() \
          - sqrt(pow(m_radius,2) - pow(virtualHeight+m_water_depth,2) );
 
         ok = (pos_c.getX() < x_pos_circle_hits_bottom );
       }
       else{
-        // Else, we are below the collaborator and should be doing fine since we could just send a signal upwards the circle path, even though the circle itself might hit the bottom somewhere else
-        ok = true;
+        // Else, we are below the collaborator, and must check our own position relative to the circle center. We should be doing fine if we are past that point as we could just send a signal upwards the circle path, even though the circle itself might hit the bottom somewhere else.
+
+        double x_pos_circle_hits_bottom = center.getX() \
+          + sqrt(pow(m_radius,2) - pow(virtualHeight + m_water_depth,2) );
+
+        ok = (pos_v.getX() > x_pos_circle_hits_bottom );
       }
 
       if(ok){
@@ -272,7 +289,7 @@ bool CommunicationAngle::Iterate()
         // Send -1 to notifyAcoutsitcPath to tell of 'nan'
         notifyAcousticPath("ACOUSTIC_PATH", m_theta0, -1);
 
-        // Only adjusts the vehicle's depth
+        // Adjusts the vehicle's depth
         findNewLocation();
       }
     }
@@ -357,9 +374,9 @@ void CommunicationAngle::notifyAcousticPath(string name, double angle, double lo
   } 
   else{
     // Since my calculations started with defining theta positive clockwise after talking to Henrik in the first lecture, I have to return the negative angle here since the testing is done on defining theta positive the other way.
-    Notify(name,"elev_angle=" + to_string(-angle*180/M_PI) + ",transmission_loss=" + to_string(loss) + ",id=simensov@mit.edu");
+    double wrappedAngle = -constrainRadian(angle)*180/M_PI;
+    Notify(name,"elev_angle=" + to_string(wrappedAngle) + ",transmission_loss=" + to_string(loss) + ",id=simensov@mit.edu");
   }
-
 }
 
 //---------------------------------------------------------
@@ -374,8 +391,7 @@ void CommunicationAngle::notifyConnectivityLocations(string name, Point p)
 {
   // Given format: string containing the location to which to transit at current speed for achieving connectivity. If a path currently exists, the location is obviously the current location. 
 
-  Notify(name,"x=" + to_string(p.getX())+",y=" + to_string(m_v_nav_y) + ",depth=" + to_string(p.getZ()) + ",id=simensov@mit.edu");
-
+  Notify(name,"x=" + to_string(m_v_nav_x)+",y=" + to_string(m_v_nav_y) + ",depth=" + to_string(p.getZ()) + ",id=simensov@mit.edu");
 }
 
 //---------------------------------------------------------
@@ -392,13 +408,15 @@ void CommunicationAngle::adjustTheta(Point pos, Point center)
   Line sourceToCenter(pos,center);
   m_theta0 = sourceToCenter.getAngle() + M_PI/2;
 
-  // avoid m_theta0 to build above 360 degrees.
-  if(m_theta0 > 2*M_PI) {
+  // limit radian to be within -pi and pi
+  // m_theta0 = constrainRadian(m_theta0);
+
+  if(m_theta0 < -2*M_PI){
+    m_theta0 += 2*M_PI;
+  }else if(m_theta0 > 2*M_PI){
     m_theta0 -= 2*M_PI;
   }
-  else if (m_theta0 < -2*M_PI){
-    m_theta0 += 2*M_PI;
-  } 
+
 }
 
 Point CommunicationAngle::findNewLocation()
@@ -426,6 +444,7 @@ Point CommunicationAngle::findNewLocation()
       cur_z = cur_z * 0.99;
     }
     else{
+      // none found - return nan as position
       double f1 = nan("-1");
       pos_new = Point(f1,f1);
       break;
