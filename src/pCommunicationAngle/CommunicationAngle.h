@@ -1,9 +1,9 @@
 /************************************************************/
-/*    NAME: Simen Sem Oevereng                              */
-/*    ORGN: MIT                                             */
-/*    FILE: CommunicationAngle.h                          */
-/*    DATE: Mar 5 2019                                      */
-/*    EDIT: -  
+/*    NAME: Simen Sem Oevereng                              
+      ORGN: MIT                                             
+      FILE: CommunicationAngle.h                          
+      DATE: Mar 5 2019                                      
+      EDIT: -  
 
       Implementations in CommunicationAngle.cpp.
 
@@ -58,10 +58,9 @@ class CommunicationAngle : public CMOOSApp
    double m_water_depth;
    double m_time_interval;
 
-   // Global var
+   // Local var
    double m_theta0;
 
-   // Local var
    string m_v_name;
    double m_v_nav_x;
    double m_v_nav_y;

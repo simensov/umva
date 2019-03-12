@@ -14,7 +14,6 @@
 */
 /************************************************************/
 
-
 #include "Geometry.h"
 using namespace std;
 
@@ -54,13 +53,13 @@ double Line::length() const {
 // @edits     m_theta: the angle of the line
 // @return    nothing
 void Line::setAngle(){
-  // FIRST quadrant is down, right in cartesian coord syst since theta is defined positive down from horizon, clockwise. this function is set to never let theta be negative!
+  // FIRST quadrant is down, right in cartesian coord syst since theta is defined positive down from horizon, clockwise. this function is set to never let theta be negative! Note that this convention for theta is along the lines of the one defined in pictures in the lab, but is returned with opposite sign when publishing the elevation angle in CommunicationAngle.h
 
   // if x-vals are not the same - get angle through arctan
   double dz = m_p2.getZ() - m_p1.getZ();
   double dx = m_p2.getX() - m_p1.getX();
 
-  // check for dx = 0. if they are equal, two cases are treated later
+  // checking for dx == 0. special cases are treated in the bottom
   if(dx != 0){
 
     if(dz < 0){       // first point is DEEPER than second (hence larger z-val)
@@ -95,12 +94,9 @@ void Line::setAngle(){
 // @return    p: the midpoint on the line as a Point object
 Point Line::midpoint() const {
   // theta defined positive WITH clock, starting horiontally to the right
-
   double dz = (length()/2) * sin(m_theta);
   double dx = (length()/2) * cos(m_theta);
-
   Point p(m_p1.getX() + dx, m_p1.getZ() + dz);
-
   return(p);
 }
 
@@ -116,6 +112,10 @@ Point Line::circleCenter(double z_end) const {
   // m_theta has been calculated to be strictly positive
   double dx = tan(m_theta) * ( midpt.getZ() + abs(z_end));
 
+  // UPDATE: since angle can be negative, this will be reflected in tan
+  // Letting it stay in the code for later reference though
+  // controlling relative position in the horizontal direction
+  /*
   if(midpt.getX() > m_p1.getX()){
     // midpoint to the right of the starting: add dx
     dx = tan(m_theta) * ( midpt.getZ() + abs(z_end));
@@ -124,6 +124,7 @@ Point Line::circleCenter(double z_end) const {
     // midpoint is to the left of starting point: subtract dx
     // dx = tan(m_theta) * ( midpt.getZ() + abs(z_end));
   }
+  */
 
   Point p2( midpt.getX() + dx, z_end);
   return(p2);

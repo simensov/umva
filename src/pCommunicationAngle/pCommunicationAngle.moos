@@ -1,11 +1,15 @@
 //------------------------------------------------
 // pCommunicationAngle config block
 
-// ServerHost = 18.38.2.158
-// ServerPort = 9011 
+// WHEN choosing this, make sure that
+//  - all couts are supressed
+//  - uTimerScript is not running and publishing
+//  - pCommunicationAngle is run by pAntler
+//ServerHost = 18.38.2.158
+//ServerPort = 9011 
 
-ServerHost = localhost
-ServerPort = 9000
+//ServerHost = localhost
+//ServerPort = 9000
 
 
 ProcessConfig = ANTLER
@@ -34,9 +38,6 @@ ProcessConfig = uXMS
 {
    AppTick   = 4
    CommsTick = 4
-
-   // var = NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING
-
 }
 
 
