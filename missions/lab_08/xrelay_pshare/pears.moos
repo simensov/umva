@@ -1,0 +1,73 @@
+ServerHost = localhost
+ServerPort = 9001
+Community  = pears
+
+// read intro to apples.moos to see logic of variable names and placements
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB	 @ NewConsole = false
+  // Run = pLogger	 @ NewConsole = false
+  Run = pXRelay	 @ NewConsole = false
+  Run = uXMS	   @ NewConsole = false
+  Run = pShare   @ NewConsole = false
+}
+
+//------------------------------------------
+// pShare config block
+ProcessConfig = pShare
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  input  = route = localhost:9201
+  output = src_name=APPLES, route=localhost:9200
+}
+
+//------------------------------------------
+// pXRelay_PEARS config block
+
+ProcessConfig = pXRelay
+{
+  AppTick = 1
+  CommsTick = 1
+
+  INCOMING_VAR  = PEARS
+  OUTGOING_VAR  = APPLES
+}
+
+//------------------------------------------
+// pLogger config block
+ProcessConfig = pLogger
+{
+  AsyncLog = true
+  WildCardLogging = true
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  PAUSED            = false
+  DISPLAY_SOURCE    = true
+  DISPLAY_TIME      = true
+  DISPLAY_COMMUNITY = true
+
+  VAR  = APPLES
+  VAR  = PEARS
+  VAR  = APPLES_ITER_HZ
+  VAR  = PEARS_ITER_HZ
+  VAR  = APPLES_POST_HZ
+  VAR  = PEARS_POST_HZ
+}
+
+
+
