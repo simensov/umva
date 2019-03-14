@@ -6,6 +6,7 @@ initialize   RETURN  = false
 initialize   STATION_KEEP = false
 initialize   LOITER  = true
 initialize   REFUELING=false
+initialize   REFUEL_NEEDED=false
 
 set MODE = ACTIVE {
   DEPLOY = true
@@ -24,11 +25,16 @@ set MODE = RETURNING {
 set MODE = LOITERING {
   MODE = ACTIVE
   LOITER = true
-} 
+  REFUELING = false
+  REFUEL_NEEDED = false
+}
 
-set MODE = REFUELING {
-  MODE = STATION-KEEPING
-  REFUELING = true
+
+
+set MODE = REFUELING {
+  MODE = ACTIVE:STATION-KEEPING
+  REFUELING = true
+  REFUEL_NEEDED = true
 }
 
 
@@ -94,7 +100,6 @@ Behavior = BHV_Waypoint
   name      = waypt_refuel
   pwt       = 100
   condition = REFUEL_NEEDED=true
-  runflag   = LOITERING=false
   endflag   = REFUELING=true
   perpetual = true
 
@@ -105,6 +110,7 @@ Behavior = BHV_Waypoint
        lead = 8
 }
 
+
 Behavior = BHV_Timer
 {
   // General Behavior Parameters
@@ -114,6 +120,7 @@ Behavior = BHV_Timer
 
   condition    = REFUELING=true
   duration     = 60
+  duration_idle_decay = false
 
   runflag      = STATION_KEEP=true
 
@@ -131,7 +138,7 @@ Behavior = BHV_Timer
   name         = bhv_watchdog_timer
   perpetual    = true
 
-  condition    = MODE==ACTIVE // LOITERING instead?
+  condition    = MODE==ACTIVE
   condition    = STATION_KEEP=false
 
   duration     = 300
@@ -140,5 +147,21 @@ Behavior = BHV_Timer
   endflag      = REFUEL_NEEDED=true
 
   updates      = TIMER_UPDATES
-
 }
+
+//----------------------------------------------
+Behavior = BHV_StationKeep
+{
+  name      = refueling_station-keep
+  pwt       = 100
+  condition = MODE==REFUELING
+
+   center_activate = true
+      inner_radius = 5
+      outer_radius = 10 
+       outer_speed = 1.0
+     transit_speed = 1.3
+        swing_time = 7
+      visual_hints = vertex_size=0, edge_color=gray50
+}
+
