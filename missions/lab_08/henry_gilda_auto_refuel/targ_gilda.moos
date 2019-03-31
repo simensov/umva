@@ -17,7 +17,7 @@ Processconfig = ANTLER
    
   Run = MOOSDB             @ NewConsole = false
   Run = uSimMarine         @ NewConsole = false
-  Run = pLogger            @ NewConsole = false
+  // Run = pLogger            @ NewConsole = false
   Run = pNodeReporter      @ NewConsole = false
   Run = pMarinePID         @ NewConsole = false
   Run = pHelmIvP           @ NewConsole = false
@@ -131,7 +131,7 @@ ProcessConfig = uProcessWatch
   CommsTick = 2
   
   WATCH  = uSimMarine
-  WATCH  = pLogger
+  // WATCH  = pLogger
   WATCH  = pNodeReporter
   WATCH  = pMarinePID
   WATCH  = pHelmIvP

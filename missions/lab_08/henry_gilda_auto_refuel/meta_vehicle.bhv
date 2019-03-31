@@ -5,8 +5,8 @@ initialize   DEPLOY  = true
 initialize   RETURN  = false
 initialize   STATION_KEEP = false
 initialize   LOITER  = true
-initialize   REFUELING=false
-initialize   REFUEL_NEEDED=false
+initialize   REFUELING = false
+initialize   REFUEL_NEEDED = false
 
 set MODE = ACTIVE {
   DEPLOY = true
@@ -29,11 +29,17 @@ set MODE = LOITERING {
   REFUEL_NEEDED = false
 }
 
-
-
-set MODE = REFUELING {
+set MODE = HOME_FOR_CHRISTMAS {
   MODE = ACTIVE:STATION-KEEPING
+  // if station-keeping, but also refueling ongoing
   REFUELING = true
+  REFUEL_NEEDED = true
+}
+
+set MODE = GOING_HOME {
+  MODE = ACTIVE
+  // if active, but refuel is needed while refueling is not yet true
+  REFUELING = false
   REFUEL_NEEDED = true
 }
 
@@ -90,9 +96,6 @@ Behavior = BHV_StationKeep
       visual_hints = vertex_size=0, edge_color=gray50
 }
 
-// TODO: THE BEHAVIOUR BELOW WORKS AS IS SHOULD, BUT ONLY ONCE. IF IT IS REPEATED, THE VALUES FOR REFUELING AND REFUELING_NEEDED GETS STUCK AT FALSE WHEN STATION_KEEP IS TRUE.
-
-
 //----------------------------------------------
 // Setting waypoint in case of refuel needed
 Behavior = BHV_Waypoint
@@ -110,7 +113,8 @@ Behavior = BHV_Waypoint
        lead = 8
 }
 
-
+//----------------------------------------------
+// Timer for refueling process
 Behavior = BHV_Timer
 {
   // General Behavior Parameters
@@ -119,8 +123,8 @@ Behavior = BHV_Timer
   perpetual    = true
 
   condition    = REFUELING=true
-  duration     = 60
   
+  duration     = 60
   duration_idle_decay = false
 
   runflag      = STATION_KEEP=true
@@ -129,25 +133,7 @@ Behavior = BHV_Timer
   endflag      = REFUELING=false
   endflag      = REFUEL_NEEDED=false
 
-  updates      = TIMER_UPDATES
-}
-
-Behavior = BHV_Timer
-{
-  // General Behavior Parameters
-  // ---------------------------
-  name         = bhv_watchdog_timer
-  perpetual    = true
-
-  condition    = MODE==ACTIVE
-  condition    = STATION_KEEP=false
-
-  duration     = 300
-  duration_idle_decay = false
-
-  endflag      = REFUEL_NEEDED=true
-
-  updates      = TIMER_UPDATES
+  updates      = TIMER_REFUEL_UPDATES
 }
 
 //----------------------------------------------
@@ -155,7 +141,7 @@ Behavior = BHV_StationKeep
 {
   name      = refueling_station-keep
   pwt       = 100
-  condition = MODE==REFUELING
+  condition = MODE==HOME_FOR_CHRISTMAS
 
    center_activate = true
       inner_radius = 5
@@ -165,3 +151,26 @@ Behavior = BHV_StationKeep
         swing_time = 7
       visual_hints = vertex_size=0, edge_color=gray50
 }
+
+//----------------------------------------------
+Behavior = BHV_Timer
+{
+  // General Behavior Parameters
+  // ---------------------------
+  name         = bhv_autorefuel_timer
+  perpetual    = true
+
+  condition    = MODE==ACTIVE
+  condition    = STATION_KEEP=false
+
+  duration     = 300
+  duration_idle_decay = false
+
+  // if manual refueling has been done, reset timer
+  duration_reset = REFUELING=true
+
+  endflag      = REFUEL_NEEDED=true
+
+  updates      = TIMER_AUTOREFUEL_UPDATES
+}
+
