@@ -25,7 +25,7 @@ class Point
 {
    public:
       Point() {m_x = 0; m_z = 0; ID = -1;}; // default constructor
-      Point(double x, double z, int id) {m_x = x; m_z = z; ID = id;};
+      Point(double x, double z, int id=0) {m_x = x; m_z = z; ID = id;};
       ~Point(){};
 
       // accessors. public since they are used in Line-class
@@ -35,6 +35,8 @@ class Point
 
       // utilities
       string printPoint() const;
+
+      double distanceTo(Point p) const;
 
       bool operator < (const Point& p) const { return (m_x < p.m_x); }
 

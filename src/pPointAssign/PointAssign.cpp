@@ -7,7 +7,9 @@
 
 #include <iterator>
 #include "MBUtils.h"
-#include "PointAssign.h"
+#include "PointAssign.h" // has included Geometry.h and Point class
+
+#include <algorithm> //std::sort()
 
 using namespace std;
 
@@ -17,7 +19,8 @@ using namespace std;
 PointAssign::PointAssign()
 {
   m_last_point_received = false;
-  m_assign_by_region = false;
+  m_assign_by_region = true;
+  m_points_are_published = false;
 }
 
 //---------------------------------------------------------
@@ -40,39 +43,35 @@ bool PointAssign::OnNewMail(MOOSMSG_LIST &NewMail)
     string key = msg.GetKey(); 
 
     if (key == "VISIT_POINT"){
-      /*
-      Idea:
-        - Check for firstpoint or lastpoint.
-          - If firstpoint:
-        - Parse the msg.GetString() into x, y and id
-        - Create a new point and add to member list/vector
-          - If lastpoint:
-        - Activate iterate - Notify 50 first and 50 last to Henry and Gilda
-
-      */
 
       string line = msg.GetString();
 
       if (line == "firstpoint"){
-        m_all_points = {} // clear vector
+        m_all_points = {}; // clear vector
       }
       else if (line == "lastpoint"){
-        m_last_point_received = true;
-      }
+        m_last_point_received = true; // send all points
+      } 
+      else {
 
+        string x_string = biteStringX(line, ',');
+        string dummy = biteStringX(x_string,'='); 
+        double x_pos = stod(x_string);
 
+        string y_string = biteStringX(line, ',');
+        dummy = biteStringX(y_string,'='); 
+        double y_pos = stod(y_string);
+
+        // now line contains 'id=num', so bite looking for '=' instead of ','
+        dummy = biteStringX(line,'=');
+        double id = stod(line);
+
+        Point pt(x_pos, y_pos, id);
+        m_all_points.push_back(pt);
+
+      } 
     }
-
-#if 0 // Keep these around just for template
-    string key   = msg.GetKey();
-    string comm  = msg.GetCommunity();
-    double dval  = msg.GetDouble();
-    string sval  = msg.GetString(); 
-    string msrc  = msg.GetSource();
-    double mtime = msg.GetTime();
-    bool   mdbl  = msg.IsDouble();
-    bool   mstr  = msg.IsString();
-#endif
+    
    }
 	
    return(true);
@@ -84,10 +83,6 @@ bool PointAssign::OnNewMail(MOOSMSG_LIST &NewMail)
 bool PointAssign::OnConnectToServer()
 {
    // register for variables here
-   // possibly look at the mission file?
-   // m_MissionReader.GetConfigurationParam("Name", <string>);
-   // m_Comms.Register("VARNAME", 0);
-	
    RegisterVariables();
    return(true);
 }
@@ -99,18 +94,57 @@ bool PointAssign::OnConnectToServer()
 bool PointAssign::Iterate()
 {
   if(m_last_point_received){
-    // act according to assignment rule chosen
+    // Act according to assignment rule chosen
+    // m_all_points should contain Point objects with printPoint
+    vector<Point> west_points;
+    vector<Point> east_points;
+
     if(m_assign_by_region){
+      // Operator < has been overloaded to sort on x-values
+      sort(m_all_points.begin(),m_all_points.end());
 
+      // Distribute
+      for(int i = 0; i < m_all_points.size(); i++){
+        if (i < m_all_points.size() / 2){ // flooring the half-way point
+          west_points.push_back(m_all_points[i]);
+        }
+        else{
+          east_points.push_back(m_all_points[i]); 
+        }
+      }
 
+    } else {
+      // Alternate between which points are distributed
+      for(int i = 0; i  < m_all_points.size(); i++){
+        if(i % 2){
+          west_points.push_back(m_all_points[i]);
+        }
+        else{
+          east_points.push_back(m_all_points[i]);
+        }
+      }
     }
-    // delegate points half on half through Notify
-  }
 
+    Notify("VISIT_POINT_HENRY","firstpoint");
+    Notify("VISIT_POINT_GILDA","firstpoint");
+    for (vector<Point>::iterator it = west_points.begin() ; it != west_points.end(); ++it){
+      Notify("VISIT_POINT_HENRY", (*it).printPoint() );
+      cout << "HENRY: " << (*it).printPoint() << endl;
+      postViewPoint( (*it).getX(), (*it).getZ(), to_string( (*it).getID() ), "yellow");
+    }
 
-  /*
-  REMEMBER: VISIT_POINT_VNAME="firstpoint" and VISIT_POINT_VNAME="lastpoint". 
-  */
+    for (vector<Point>::iterator it = east_points.begin() ; it != east_points.end(); ++it){
+      Notify("VISIT_POINT_GILDA", (*it).printPoint());
+      cout << "GILDA: " << (*it).printPoint() << endl;
+      postViewPoint( (*it).getX(), (*it).getZ(), to_string( (*it).getID() ), "red");
+    }
+    Notify("VISIT_POINT_HENRY","lastpoint");
+    Notify("VISIT_POINT_GILDA","lastpoint");
+  
+    m_last_point_received = false;
+
+  } // if all points received
+
   return(true);
 }
 
@@ -139,6 +173,7 @@ bool PointAssign::OnStartUp()
   }
   
   RegisterVariables();	
+  Notify("UTS_PAUSE","false");
   return(true);
 }
 
@@ -150,3 +185,14 @@ void PointAssign::RegisterVariables()
   Register("VISIT_POINT", 0);
 }
 
+
+void PointAssign::postViewPoint(double x, double y, string label, string color)
+{
+  XYPoint point(x, y);
+  point.set_label(label);
+  point.set_color("vertex", color);
+  point.set_param("vertex_size", "6");
+
+  string spec = point.get_spec();
+  Notify("VIEW_POINT", spec);
+}
