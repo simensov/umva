@@ -9,7 +9,7 @@
 #include "MBUtils.h"
 #include "PointAssign.h" // has included Geometry.h and Point class
 
-#include <algorithm> //std::sort()
+#include <algorithm> //std::sort() and std::transform
 
 using namespace std;
 
@@ -40,6 +40,31 @@ bool PointAssign::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
 
     string key = msg.GetKey(); 
+
+    // look for vehicle names until all 2 expected have reported NODE_REPORT
+    if(key == "NODE_REPORT" && m_all_vehicles.size() < 2){
+      // get vehicle name
+      string line = msg.GetString();
+      string name = tokStringParse( line, "NAME" , ',' , '=');
+
+      // transform name to uppercase
+      transform(name.begin(), name.end(), name.begin(), static_cast<int(*)(int)>(std::toupper));
+
+      // check if name already exists. if not; add to vector
+      vector<string>::iterator it;
+      bool exists = false;
+      
+      // check for existence
+      for(it = m_all_vehicles.begin(); it != m_all_vehicles.end(); ++it){
+        if(*it == name){
+          exists = true;
+        }
+      }
+
+      if(!exists){
+        m_all_vehicles.push_back(name);
+      }
+    }
 
     // store all points in a vector if it is not the first or last strings
     if (key == "VISIT_POINT"){
@@ -93,9 +118,10 @@ bool PointAssign::OnConnectToServer()
 
 bool PointAssign::Iterate()
 {
-  if(m_last_point_received){
-    // Act according to assignment rule chosen
-    // m_all_points should contain Point objects with printPoint
+  // Act according to assignment rule chosen when all points and vehicles are ready. m_all_points should contain Point objects with printPoint
+
+  if(m_last_point_received && m_all_vehicles.size() == 2){
+
     vector<Point> west_points;
     vector<Point> east_points;
 
@@ -126,24 +152,25 @@ bool PointAssign::Iterate()
     }
 
     // TODO: change the hardcoding of vehicle names. Use OnNewMail to read NODE_REPORT, which has "name=gilda" as first element (bite on ',').
+    string vpt1 = "VISIT_POINT_" + m_all_vehicles[0];
+    string vpt2 = "VISIT_POINT_" + m_all_vehicles[1];
 
-    Notify("VISIT_POINT_HENRY","firstpoint");
-    Notify("VISIT_POINT_GILDA","firstpoint");
+    Notify(vpt1,"firstpoint");
+    Notify(vpt2,"firstpoint");
+
     vector<Point>::iterator it;
     for (it = west_points.begin() ; it != west_points.end(); ++it){
-      Notify("VISIT_POINT_HENRY", (*it).printPoint() );
-      cout << "HENRY: " << (*it).printPoint() << endl;
+      Notify(vpt1, (*it).printPoint() );
       postViewPoint( (*it).getX(), (*it).getZ(), to_string( (*it).getID() ),\
         "yellow");
     }
 
     for (it = east_points.begin() ; it != east_points.end(); ++it){
-      Notify("VISIT_POINT_GILDA", (*it).printPoint());
-      cout << "GILDA: " << (*it).printPoint() << endl;
+      Notify(vpt2, (*it).printPoint());
       postViewPoint( (*it).getX(), (*it).getZ(), to_string( (*it).getID() ), "red");
     }
-    Notify("VISIT_POINT_HENRY","lastpoint");
-    Notify("VISIT_POINT_GILDA","lastpoint");
+    Notify(vpt1,"lastpoint");
+    Notify(vpt2,"lastpoint");
   
     // To avoid that the points are published in an infinite loop in iterate, we supress it by saying that the last point is false. It is assumed that if it receives new points later, it will go through the same process over again
     m_last_point_received = false;
@@ -178,7 +205,7 @@ bool PointAssign::OnStartUp()
   }
   
   RegisterVariables();
-  	
+
   Notify("UTS_PAUSE","false");
   return(true);
 }
@@ -189,6 +216,7 @@ bool PointAssign::OnStartUp()
 void PointAssign::RegisterVariables()
 {
   Register("VISIT_POINT", 0);
+  Register("NODE_REPORT", 0);
 }
 
 

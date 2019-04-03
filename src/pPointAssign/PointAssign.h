@@ -36,10 +36,11 @@ class PointAssign : public CMOOSApp
 
  protected:
   // config 
-  // vname and list of vehicle names?
+  vector<string> m_all_vehicles;
 
   // work
   vector<Point> m_all_points;
+
   bool m_last_point_received;
   bool m_assign_by_region;
   bool m_points_are_published;
