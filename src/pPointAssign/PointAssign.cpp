@@ -2,7 +2,7 @@
 /*    NAME: Simen Oevereng                                              */
 /*    ORGN: MIT                                             */
 /*    FILE: PointAssign.cpp                                        */
-/*    DATE:                                                 */
+/*    DATE: Apr 2. 2019                                                */
 /************************************************************/
 
 #include <iterator>

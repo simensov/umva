@@ -125,13 +125,16 @@ Behavior = BHV_Waypoint
 
 
 //----------------------------------------------
-// Setting waypoint in case of refuel needed
+// Setting waypoint for traversing
 Behavior = BHV_Waypoint
 {
   name      = waypt_traverse
   pwt       = 100
   condition = TRAVERSE=true
   endflag   = REFUEL_NEEDED=true
+
+  // TODO: this endflag makes the end of some missions hiccup if not all points in the last round has been visited
+  
   perpetual = true
 
       speed = 1.2
@@ -164,7 +167,11 @@ Behavior = BHV_Timer
   endflag      = REFUELING=false
   endflag      = REFUEL_NEEDED=false
 
+  endflag      = GENPATH_REGENERATIVE=false
+
   updates      = TIMER_REFUEL_UPDATES
+
+
 }
 
 //----------------------------------------------
@@ -201,6 +208,8 @@ Behavior = BHV_Timer
   duration_reset = REFUELING=true
 
   endflag      = REFUEL_NEEDED=true
+
+  endflag      = GENPATH_REGENERATIVE=true
 
   updates      = TIMER_AUTOREFUEL_UPDATES
 }

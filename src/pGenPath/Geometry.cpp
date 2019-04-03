@@ -23,7 +23,7 @@ using namespace std;
 // @edits     no edits
 // @return    a string containing the x,y position of the Point, and ID
 string Point::printPoint() const {
-  string s = "x=" + to_string(m_x) + ", y=" + to_string(m_z) + ", id=" + to_string(ID);
+  string s = "x=" + to_string(m_x) + ", y=" + to_string(m_z) + ", id=" + to_string(m_ID);
   return s;
 }
 
