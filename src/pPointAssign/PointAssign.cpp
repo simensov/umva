@@ -15,7 +15,6 @@ using namespace std;
 
 //---------------------------------------------------------
 // Constructor
-
 PointAssign::PointAssign()
 {
   m_last_point_received = false;
@@ -42,6 +41,7 @@ bool PointAssign::OnNewMail(MOOSMSG_LIST &NewMail)
 
     string key = msg.GetKey(); 
 
+    // store all points in a vector if it is not the first or last strings
     if (key == "VISIT_POINT"){
 
       string line = msg.GetString();
@@ -71,7 +71,7 @@ bool PointAssign::OnNewMail(MOOSMSG_LIST &NewMail)
 
       } 
     }
-    
+
    }
 	
    return(true);
@@ -125,15 +125,19 @@ bool PointAssign::Iterate()
       }
     }
 
+    // TODO: change the hardcoding of vehicle names. Use OnNewMail to read NODE_REPORT, which has "name=gilda" as first element (bite on ',').
+
     Notify("VISIT_POINT_HENRY","firstpoint");
     Notify("VISIT_POINT_GILDA","firstpoint");
-    for (vector<Point>::iterator it = west_points.begin() ; it != west_points.end(); ++it){
+    vector<Point>::iterator it;
+    for (it = west_points.begin() ; it != west_points.end(); ++it){
       Notify("VISIT_POINT_HENRY", (*it).printPoint() );
       cout << "HENRY: " << (*it).printPoint() << endl;
-      postViewPoint( (*it).getX(), (*it).getZ(), to_string( (*it).getID() ), "yellow");
+      postViewPoint( (*it).getX(), (*it).getZ(), to_string( (*it).getID() ),\
+        "yellow");
     }
 
-    for (vector<Point>::iterator it = east_points.begin() ; it != east_points.end(); ++it){
+    for (it = east_points.begin() ; it != east_points.end(); ++it){
       Notify("VISIT_POINT_GILDA", (*it).printPoint());
       cout << "GILDA: " << (*it).printPoint() << endl;
       postViewPoint( (*it).getX(), (*it).getZ(), to_string( (*it).getID() ), "red");
@@ -141,6 +145,7 @@ bool PointAssign::Iterate()
     Notify("VISIT_POINT_HENRY","lastpoint");
     Notify("VISIT_POINT_GILDA","lastpoint");
   
+    // To avoid that the points are published in an infinite loop in iterate, we supress it by saying that the last point is false. It is assumed that if it receives new points later, it will go through the same process over again
     m_last_point_received = false;
 
   } // if all points received
@@ -172,7 +177,8 @@ bool PointAssign::OnStartUp()
     }
   }
   
-  RegisterVariables();	
+  RegisterVariables();
+  	
   Notify("UTS_PAUSE","false");
   return(true);
 }
@@ -186,6 +192,12 @@ void PointAssign::RegisterVariables()
 }
 
 
+//---------------------------------------------------------
+// Procedure: postViewPoint
+// PURPOSE:   posts a MOOS Variable so that the pMarineViewer can visualize
+// @param     
+// @edits     
+// @return 
 void PointAssign::postViewPoint(double x, double y, string label, string color)
 {
   XYPoint point(x, y);
