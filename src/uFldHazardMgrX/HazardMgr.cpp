@@ -1,8 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin                                     */
+/*    NAME: Simen Sem Oevereng (original by Michael Benjamin)    */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HazardMgr.cpp                                        */
-/*    DATE: Oct 26th 2012                                        */
+/*    DATE: Apr 4 (Original made Oct 26th 2012)                  */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -160,8 +160,9 @@ bool HazardMgr::OnStartUp()
     }
     else if(param == "region") {
       XYPolygon poly = string2Poly(value);
-      if(poly.is_convex())
-	m_search_region = poly;
+      if(poly.is_convex()){
+        m_search_region = poly;
+      }
       handled = true;
     }
 
@@ -248,7 +249,6 @@ bool HazardMgr::handleMailSensorConfigAck(string str)
       valid_msg = false;       
 
   }
-
 
   if((vname=="")||(width=="")||(pd=="")||(pfa=="")||(pclass==""))
     valid_msg = false;

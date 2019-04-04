@@ -19,7 +19,6 @@ PointAssign::PointAssign()
 {
   m_last_point_received = false;
   m_assign_by_region = true;
-  m_points_are_published = false;
 }
 
 //---------------------------------------------------------
@@ -93,10 +92,8 @@ bool PointAssign::OnNewMail(MOOSMSG_LIST &NewMail)
 
         Point pt(x_pos, y_pos, id);
         m_all_points.push_back(pt);
-
       } 
     }
-
    }
 	
    return(true);
@@ -151,7 +148,6 @@ bool PointAssign::Iterate()
       }
     }
 
-    // TODO: change the hardcoding of vehicle names. Use OnNewMail to read NODE_REPORT, which has "name=gilda" as first element (bite on ',').
     string vpt1 = "VISIT_POINT_" + m_all_vehicles[0];
     string vpt2 = "VISIT_POINT_" + m_all_vehicles[1];
 

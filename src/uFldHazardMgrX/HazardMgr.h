@@ -1,8 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin                                     */
+/*    NAME: Simen Sem Oevereng (original by Michael Benjamin)    */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HazardMgr.h                                          */
-/*    DATE: Oct 26th 2012                                        */
+/*    DATE: Apr 4 (Original made Oct 26th 2012)                  */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */

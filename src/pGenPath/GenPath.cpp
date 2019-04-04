@@ -18,6 +18,12 @@
 
 using namespace std;
 
+string BoolToString(bool b)
+{
+  return b ? "true" : "false";
+}
+
+
 //---------------------------------------------------------
 // Constructor
 
@@ -138,14 +144,6 @@ bool GenPath::OnNewMail(MOOSMSG_LIST &NewMail)
             }
           } // for rem
         } // for vis
-
-        /*
-        if(m_visited_points.size() == m_all_points.size()){
-          cout << "TRAVERSE SHOULD BE FALSE" << endl;
-          Notify("TRAVERSE","false");
-        }
-        else{
-          */
         
         // recalculate instead of iterate to avoid empty remaining vector
         vector<Point> ret_pts = greedyPath();
@@ -156,7 +154,8 @@ bool GenPath::OnNewMail(MOOSMSG_LIST &NewMail)
     } // if key genpath
 
     if (key == "REFUEL_NEEDED"){
-      // TODO: this handles that the vehicle avoid counting points on the way home, but not on the way back! Might not be a problem since path is recalculated when returning, so closest point will be first visited!
+      // TODO: this handles that the vehicle avoid counting points on the way home. On the way back, the path is recalculated, so closest point will be first visited!
+
       string line = msg.GetString();
 
       if(line == "true"){
@@ -280,9 +279,9 @@ bool GenPath::buildReport()
   m_msgs << "Number of points: " << m_all_points.size()     << endl;
   m_msgs << "Points visited: " << m_visited_points.size()   << endl;
   m_msgs << "Points remaining: " << m_remaining_points.size() << endl;
-  m_msgs << "Currently searching: " << m_searching          << endl;
+  m_msgs << "Currently searching: " << BoolToString(m_searching)  << endl;
   Point current_pos(m_nav_x, m_nav_y,-1);
-  m_msgs << "Curpos " << current_pos.printPoint()           << endl;
+  m_msgs << "Current pos: " << current_pos.printPoint()      << endl;
 
 
   return(true);
@@ -297,18 +296,14 @@ bool GenPath::buildReport()
 // @return 
 vector<Point> GenPath::greedyPath() const{
 
-  // TODO: check if implementation with m_remaining_points works instead of all points 
-
   vector<Point> ret_pts; // to return
  
-  //vector<Point> pts = m_all_points; // to browse and remove 
   vector<Point> pts = m_remaining_points; // to browse and remove 
 
   map<double, int> idx; // a map that will contain distance and a list of all the indexes in m_all_points that has that distance to current 
 
   Point p(m_init_x,m_init_y);
 
-  //int no_of_points = m_all_points.size();
   int no_of_points = m_remaining_points.size();
 
   // for every single point that shall be visited
@@ -316,7 +311,7 @@ vector<Point> GenPath::greedyPath() const{
 
     // for all points that are currently not added to generated path
     for(int j = 0; j < pts.size(); j++){
-      idx[pts[j].distanceTo(p)] = j; 
+      idx[ pts[j].distanceTo(p) ] = j; 
     }
 
     // choose closest point by the stored index in idx
@@ -350,11 +345,9 @@ void GenPath::publishGreedyPath(vector<Point> ret_pts){
 
   string update_str = "points = ";
   update_str += my_seglist.get_spec();
-
   Notify("UPDATES_TRAVERSE_WAYPT", update_str);
 
   // Notifying so that traverse can happen 
   Notify("TRAVERSE","true");
-
   m_path_calculated = true;
 }

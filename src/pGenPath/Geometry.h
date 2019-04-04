@@ -38,9 +38,10 @@ class Point
 
       double distanceTo(Point p) const;
 
+      // operator overloading for usage in algorithms like sorting etc.
       bool operator < (const Point& p) const { return (m_x < p.m_x); }
 
-      // TODO: check these operators
+      // operator overloading for usage in checking for existence in lists etc.
       bool operator == (const Point& p) const { 
             return( m_ID == p.getID() ); }
       bool operator != (const Point& p) const { 

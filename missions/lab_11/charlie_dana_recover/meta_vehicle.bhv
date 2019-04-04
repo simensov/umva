@@ -6,7 +6,7 @@ initialize   RETURN  = false
 initialize   STATION_KEEP = false
 initialize   LOITER  = true
 initialize   AVOID   = true
-initialize   RECOVER = false // TODO: Maybe useless
+initialize   RECOVER = false 
 
 set MODE = ACTIVE {
   DEPLOY = true
@@ -110,7 +110,7 @@ Behavior = BHV_Waypoint
   nm_radius = 15.0
 
      points = 50,-60 //$(START_POS)
-     // TODO: use UP_RECOVER to find relevant pts. START_POS can be good for now, but change 
+
        lead = 8
 
     updates = UP_RECOVER
@@ -135,7 +135,7 @@ Behavior = BHV_Timer
 
   duration_idle_decay = false
 
-  endflag      = RECOVER=true // TODO: must decide last y-pos
+  endflag      = RECOVER=true
 
   updates      = TIMER_RECOVER_UPDATES
 }

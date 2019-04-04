@@ -35,15 +35,12 @@ class PointAssign : public CMOOSApp
    void postViewPoint(double x, double y, string label, string color);
 
  protected:
-  // config 
-  vector<string> m_all_vehicles;
 
-  // work
-  vector<Point> m_all_points;
+  vector<string> m_all_vehicles;  // name of incoming vehicles
+  vector<Point> m_all_points;     // all waypoints 
 
-  bool m_last_point_received;
-  bool m_assign_by_region;
-  bool m_points_are_published;
+  bool m_last_point_received;     // checks if received point is lastpoint
+  bool m_assign_by_region;        // config of how to distribute points
 };
 
 #endif 
