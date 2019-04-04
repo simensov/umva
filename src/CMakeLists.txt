@@ -23,6 +23,7 @@ ADD_SUBDIRECTORY(pOdometry)
 ADD_SUBDIRECTORY(pCommunicationAngle)
 ADD_SUBDIRECTORY(pPointAssign)
 ADD_SUBDIRECTORY(pGenPath)
+ADD_SUBDIRECTORY(uFldHazardMgrX)
 
 ##############################################################################
 #                           END of CMakeLists.txt
