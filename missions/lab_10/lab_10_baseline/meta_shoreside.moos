@@ -3,8 +3,8 @@
 //
 
 ServerHost = localhost
-ServerPort = $(SPORT)
-Community  = $(SNAME)
+ServerPort = $(SPORT) // TODO 9300
+Community  = $(SNAME) // TODO simen
 
 #include plug_origin_warp.moos
   
