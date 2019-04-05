@@ -49,6 +49,7 @@ set MODE = HOME_FOR_CHRISTMAS {
 set MODE = GOING_HOME {
   MODE = ACTIVE
   // if active, but refuel is needed while refueling is not yet true
+  // to show difference between return/active and going home
   REFUELING = false
   REFUEL_NEEDED = true
 }
@@ -133,7 +134,7 @@ Behavior = BHV_Waypoint
   condition = TRAVERSE=true
   endflag   = REFUEL_NEEDED=true
 
-  // TODO: this endflag makes the end of some missions hiccup if not all points in the last round has been visited
+  // TODO: this endflag makes the end of some missions hiccup if not all points in the last round has been visited 
   
   perpetual = true
 
@@ -199,6 +200,8 @@ Behavior = BHV_Timer
   perpetual    = true
 
   condition    = MODE==ACTIVE
+  // condition    = MODE==TRAVERSING
+
   condition    = STATION_KEEP=false
 
   duration     = 600

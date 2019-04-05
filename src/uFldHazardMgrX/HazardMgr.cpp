@@ -90,6 +90,8 @@ bool HazardMgr::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "UHZ_MISSION_PARAMS") 
       handleMailMissionParams(sval);
 
+    // TODO node report local and node message
+
     else 
       reportRunWarning("Unhandled Mail: " + key);
   }
@@ -119,6 +121,8 @@ bool HazardMgr::Iterate()
 
   if(m_sensor_config_set)
     postSensorInfoRequest();
+
+  // TODO send out NODE_MESSAGE_LOCAL, "src_node=$(VNAME),dest_node=all,var_name=SOME_HAZARD_MESSAGE,string_val=THE_ACTUAL_MESSAGE"
 
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -189,6 +193,8 @@ void HazardMgr::registerVariables()
   Register("UHZ_OPTIONS_SUMMARY", 0);
   Register("UHZ_MISSION_PARAMS", 0);
   Register("HAZARDSET_REQUEST", 0);
+
+  // TODO register for node report?
 }
 
 //---------------------------------------------------------

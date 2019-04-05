@@ -1,8 +1,8 @@
 /************************************************************/
-/*    NAME: Simen Oevereng                                              */
+/*    NAME: Simen Oevereng                                  */
 /*    ORGN: MIT                                             */
-/*    FILE: GenPath.h                                          */
-/*    DATE: December 29th, 1963                             */
+/*    FILE: GenPath.h                                       */
+/*    DATE: Apr 2. 2019                                     */
 /************************************************************/
 
 #ifndef GenPath_HEADER
@@ -43,17 +43,14 @@ protected: // Variables
    vector<Point> m_visited_points;
 
    bool m_searching;
-
    bool m_last_point_received;
-   int m_points_visited;
-
    bool m_path_calculated; 
-   double m_init_x;
-   double m_init_y;
-
+   bool m_all_visited;
+   
    bool m_x_rec;
    bool m_y_rec;
-   bool m_nav_rec;
+   double m_init_x;
+   double m_init_y;
 
    double m_nav_x;
    double m_nav_y;

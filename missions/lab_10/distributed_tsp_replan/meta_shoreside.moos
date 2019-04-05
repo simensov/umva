@@ -70,6 +70,11 @@ ProcessConfig = pMarineViewer
   hash_viewable        = true
   hash_shade           = 0.35
 
+  nodes_font_size=xlarge
+  procs_font_size=xlarge
+  appcast_font_size=xlarge
+
+
   SCOPE = PHI_HOST_INFO
 
   BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
