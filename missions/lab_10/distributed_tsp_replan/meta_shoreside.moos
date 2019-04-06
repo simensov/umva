@@ -73,6 +73,7 @@ ProcessConfig = pMarineViewer
   nodes_font_size=xlarge
   procs_font_size=xlarge
   appcast_font_size=xlarge
+  point_viewable_labels=true
 
 
   SCOPE = PHI_HOST_INFO

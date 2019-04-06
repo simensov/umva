@@ -33,7 +33,7 @@ Processconfig = ANTLER
 //------------------------------------------------------------
 Processconfig = uXMS
 {
-  var = DEPLOY, SURVEY, STATION, MOOS_MANUAL_OVERRIDE
+  var = DEPLOY, SURVEY, STATION, MOOS_MANUAL_OVERRIDE, NODE_MESSAGE_LOCAL
 }
 
 

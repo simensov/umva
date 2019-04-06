@@ -1,8 +1,8 @@
 /*****************************************************************/
-/*    NAME: Simen Sem Oevereng (original by Michael Benjamin)    */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HazardMgr.h                                          */
-/*    DATE: Apr 4 (Original made Oct 26th 2012)                  */
+/*    DATE: Oct 26th 2012                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -50,12 +50,18 @@ class HazardMgr : public AppCastingMOOSApp
    bool handleMailDetectionReport(std::string);
    bool handleMailHazardReport(std::string) {return(true);}
    void handleMailReportRequest();
-   void handleMailMissionParams(std::string);
+   void handleMailMissionParams(std::string);   
+   void handleAddName(std::string);
+   void handleHazardReport(std::string);
 
  protected: 
    void postSensorConfigRequest();
    void postSensorInfoRequest();
    void postHazardSetReport();
+
+
+   // self made
+   void postHazardMessage();
    
  private: // Configuration variables
    double      m_swath_width_desired;
@@ -81,6 +87,13 @@ class HazardMgr : public AppCastingMOOSApp
    XYPolygon   m_search_region;
    
    double      m_transit_path_width;
+
+   // self made
+   double m_last_msg_sent;       // time since last message
+   std::string m_name;           // name of current vehicle
+   XYHazardSet m_hazard_sent;   // the set of sent hazards, not add to msg
+
+   std::string m_msg;
 };
 
 #endif 

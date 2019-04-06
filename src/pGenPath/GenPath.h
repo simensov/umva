@@ -45,7 +45,6 @@ protected: // Variables
    bool m_searching;
    bool m_last_point_received;
    bool m_path_calculated; 
-   bool m_all_visited;
    
    bool m_x_rec;
    bool m_y_rec;
