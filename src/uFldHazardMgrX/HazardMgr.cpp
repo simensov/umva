@@ -56,9 +56,23 @@ HazardMgr::HazardMgr()
 
   m_summary_reports = 0;
 
+  m_transit_path_width = 0;
+
   m_name = "";
 
   m_last_msg_sent = 0;
+
+  // TODO: NEW
+  m_max_time               = 0;
+  m_mission_start_time     = 0; 
+  m_penalty.missed_hazard  = 0;
+  m_penalty.nonopt_hazard  = 0;
+  m_penalty.false_alarm    = 0;
+  m_penalty.max_time_over  = 0;
+  m_penalty.max_time_rate  = 0;
+
+  m_search_region_str = "";
+
 }
 
 //---------------------------------------------------------
@@ -74,6 +88,8 @@ bool HazardMgr::OnNewMail(MOOSMSG_LIST &NewMail)
     string key   = msg.GetKey();
     string sval  = msg.GetString(); 
 
+    bool handled = false;
+
 #if 0 // Keep these around just for template
     string comm  = msg.GetCommunity();
     double dval  = msg.GetDouble();
@@ -83,33 +99,49 @@ bool HazardMgr::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mstr  = msg.IsString();
 #endif
     
-    if(key == "UHZ_CONFIG_ACK") 
+    if(key == "UHZ_CONFIG_ACK"){
       handleMailSensorConfigAck(sval);
+      handled = true;
+    }
 
-    else if(key == "UHZ_OPTIONS_SUMMARY") 
+    if(key == "UHZ_OPTIONS_SUMMARY"){
       handleMailSensorOptionsSummary(sval);
+      handled = true;
+    }
 
-    else if(key == "UHZ_DETECTION_REPORT") 
+    if(key == "UHZ_DETECTION_REPORT"){
       handleMailDetectionReport(sval);
+      handled = true;
+    }
 
-    else if(key == "HAZARDSET_REQUEST") 
+    if(key == "HAZARDSET_REQUEST"){
       handleMailReportRequest();
+      handled = true;
+    }
 
-    else if(key == "UHZ_MISSION_PARAMS") 
+    if(key == "UHZ_MISSION_PARAMS"){
       handleMailMissionParams(sval);
+      handled = true;
+    }
 
-    else if(key == "NODE_REPORT_LOCAL"){
+    if(key == "NODE_REPORT_LOCAL"){
       if (m_name == ""){
         handleAddName(sval);
       }
+      handled = true;
     }
 
-    else if (key == "HAZARD_REPORT"){
+    if (key == "HAZARD_REPORT"){
       handleHazardReport(sval);
+      handled = true;
     }
 
-
-    else 
+    if(m_name != "" && key == "UHZ_HAZARD_REPORT_" + m_name){
+      handleClassificationReport(sval);
+      handled = true;
+    }
+    
+    if(!handled) 
       reportRunWarning("Unhandled Mail: " + key);
   }
 	
@@ -139,8 +171,13 @@ bool HazardMgr::Iterate()
   if(m_sensor_config_set)
     postSensorInfoRequest();
 
-  if (MOOSTime() - m_last_msg_sent > 60.1){
+  if(MOOSTime() - m_last_msg_sent > 60.1){
     postHazardMessage();
+  }
+
+  // TODO: NEW
+  if( (MOOSTime() - m_mission_start_time) > m_max_time * 0.9){
+    // Meet up to merge reports and finish mission FEKS
   }
 
   AppCastingMOOSApp::PostReport();
@@ -184,7 +221,7 @@ bool HazardMgr::OnStartUp()
     else if(param == "region") {
       XYPolygon poly = string2Poly(value);
       if(poly.is_convex())
-	m_search_region = poly;
+        m_search_region = poly;
       handled = true;
     }
 
@@ -354,18 +391,93 @@ void HazardMgr::handleMailReportRequest()
 //                       transit_path_width=25,                           
 //                       search_region = pts={-150,-75:-150,-50:40,-50:40,-75}
 
-
+// Store all parameters for the mission. Update member variables and publish search region to a waypoint update moos cariable to decide search region
 void HazardMgr::handleMailMissionParams(string str)
 {
   vector<string> svector = parseStringZ(str, ',', "{");
-  unsigned int i, vsize = svector.size();
-  for(i=0; i<vsize; i++) {
+  unsigned int vsize = svector.size();
+  for(unsigned int i=0; i<vsize; i++) {
     string param = biteStringX(svector[i], '=');
     string value = svector[i];
-    // This needs to be handled by the developer. Just a placeholder.
+
+    // TODO: NEW
+    if(param == "penalty_missed_hazard")
+      m_penalty.missed_hazard = stod(value);
+
+    if(param == "penalty_nonopt_hazard")
+      m_penalty.nonopt_hazard = stod(value);
+
+    if(param == "penalty_false_alarm")
+      m_penalty.false_alarm = stod(value);
+
+    if(param == "penalty_max_time_over")
+      m_penalty.max_time_over = stod(value);
+
+    if(param == "penalty_max_time_rate")
+      m_penalty.max_time_rate = stod(value);
+
+    if(param == "max_time")
+      m_max_time = stod(value);
+
+    if(param == "transit_path_width")
+      m_transit_path_width = stod(value);
+
+    if(param == "search_region")
+      m_search_region_str = value; //pts={-150,-75:-150,-400:400,-400:400,-75} 
   }
 }
 
+// TODO: NEW
+//---------------------------------------------------------
+// Procedure: handleMailMissionParams
+// Purpose:   deals with incoming classification reports from UHZ that the 
+//            vehicle has requested classification on
+//            Example str: "label=12,type=benign"
+void HazardMgr::handleClassificationReport(string str){
+  vector<string> svector = parseStringZ(str, ',', "{");
+  int lab = -1;
+  string haz_str = "";
+  bool haz = false;
+
+  unsigned int vsize = svector.size();
+  for(unsigned int i=0; i<vsize; i++) {
+    string param = biteStringX(svector[i], '=');
+    string value = svector[i];
+
+    // TODO: NEW
+    if(param == "label")
+      lab = stod(value);
+
+    if(param == "type")
+      haz_str = value;
+
+    if(lab != -1 && !haz_str.empty()){
+      if(haz_str == "benign"){
+        haz = false;
+      } else{
+        haz = true;
+      }
+
+      // TODO: needs to add probability somehow
+      Classification c(lab,haz);
+
+      // Add classification to member vector of classifications
+      // If it already exists, then compute new probability based on old classification vs. new one
+      
+
+      vector<Classification>::iterator it;
+      for(it = m_classifications.begin(); it != m_classifications.end(); ++it){
+        if( (*it).getLabel() ==  lab){
+          // TODO: calculate new prob, e.g.  getProb*getProb so low probabilities will get really low 
+        }
+        else{
+          // Not classified before - add to vector
+          m_classifications.push_back(c);
+        }
+      } // for all former classifications
+    } // if we have got a labal and a type
+  } // for all elements in current string
+} // func
 
 //------------------------------------------------------------
 // Procedure: buildReport()
@@ -427,8 +539,6 @@ void HazardMgr::handleAddName(string str)
     }
   }
 }
-
-
 
 //---------------------------------------------------------
 // Procedure: postHazardMessage()
@@ -493,7 +603,7 @@ void HazardMgr::postHazardMessage()
     m_msg += "F";
   }
 
-  Notify("NODE_MESSAGE_LOCAL",m_msg);
+  Notify("NODE_MESSAGE_LOCAL", m_msg);
   m_last_msg_sent = MOOSTime();
 
   if(debug)

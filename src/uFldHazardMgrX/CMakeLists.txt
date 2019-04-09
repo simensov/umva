@@ -4,6 +4,7 @@
 #--------------------------------------------------------
 
 SET(SRC
+  Classification.cpp
   HazardMgr.cpp
   HazardMgr_Info.cpp
   main.cpp

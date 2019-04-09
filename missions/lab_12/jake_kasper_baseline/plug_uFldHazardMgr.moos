@@ -7,10 +7,10 @@ ProcessConfig = uFldHazardMgrX // X // changed to X
   CommsTick = 2
 
 #ifdef VNAME VNAME1
-  swath_width = 50
+  swath_width = 40
 #elseifdef VNAME VNAME2
   swath_width = 10
 #endif
-  sensor_pd   = 0.7
+  sensor_pd   = 0.8
   report_name = $(VNAME)
 }

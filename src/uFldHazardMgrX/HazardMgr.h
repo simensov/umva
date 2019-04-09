@@ -28,11 +28,19 @@
 #include "XYHazardSet.h"
 #include "XYPolygon.h"
 
+#include <vector>
+#include "Classification.h"
+
+// TODO: NEW
+struct Penalty{
+   double missed_hazard, nonopt_hazard, false_alarm, max_time_over, max_time_rate;
+}; 
+
 class HazardMgr : public AppCastingMOOSApp
 {
  public:
    HazardMgr();
-   ~HazardMgr() {}
+   ~HazardMgr(){};
 
  protected: // Standard MOOSApp functions to overload  
    bool OnNewMail(MOOSMSG_LIST &NewMail);
@@ -59,9 +67,11 @@ class HazardMgr : public AppCastingMOOSApp
    void postSensorInfoRequest();
    void postHazardSetReport();
 
-
    // self made
    void postHazardMessage();
+
+   // TODO: NEW
+   void handleClassificationReport(std::string);
    
  private: // Configuration variables
    double      m_swath_width_desired;
@@ -91,17 +101,18 @@ class HazardMgr : public AppCastingMOOSApp
    // self made
    double m_last_msg_sent;       // time since last message
    std::string m_name;           // name of current vehicle
-   XYHazardSet m_hazard_sent;   // the set of sent hazards, not add to msg
+   XYHazardSet m_hazard_sent;    // the set of sent hazards, not add to msg
 
-   std::string m_msg;
+   std::string m_msg;            // stores the hazard message
+
+   // TODO: NEW
+   Penalty m_penalty;
+   double m_max_time;
+   double m_mission_start_time;
+   std::string m_search_region_str;
+
+   std::vector<Classification> m_classifications;
+
 };
 
 #endif 
-
-
-
-
-
-
-
-
