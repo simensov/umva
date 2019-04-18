@@ -14,6 +14,10 @@ MOOS applications created:
   - pPrimeFactor
   - pPointAssign
   - pGenPath
+  - uFldHazardMgrX
+
+IvP-Helm Behaviours created:
+  - BHV_Pulse
 
 Missions added / created / modified:
   - Lab  3:
@@ -25,4 +29,4 @@ Missions added / created / modified:
   - Lab  9: henry_gilda_TSP (using pPointAssign and pGenPath)
   - Lab 10:
   - Lab 11:
-
+  - Lab 12: jake_kasper_baseline (using uFldHazardMgrX)

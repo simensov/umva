@@ -1,8 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin                                     */
+/*    NAME: Oliver Os and Simen Oevereng                       */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HazardMgr.h                                          */
-/*    DATE: Oct 26th 2012                                        */
+/*    DATE: Apr 2019                                       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -31,7 +31,6 @@
 #include <vector>
 #include "Classification.h"
 
-// TODO: NEW
 struct Penalty{
    double missed_hazard, nonopt_hazard, false_alarm, max_time_over, max_time_rate;
 }; 
@@ -70,7 +69,6 @@ class HazardMgr : public AppCastingMOOSApp
    // self made
    void postHazardMessage();
 
-   // TODO: NEW
    void handleClassificationReport(std::string);
    
  private: // Configuration variables
@@ -105,13 +103,11 @@ class HazardMgr : public AppCastingMOOSApp
 
    std::string m_msg;            // stores the hazard message
 
-   // TODO: NEW
    Penalty m_penalty;
    double m_max_time;
    double m_mission_start_time;
    std::string m_search_region_str;
-
-   std::vector<Classification> m_classifications;
+   std::vector<Classification> m_classifications; // (label,classific,prob)
 
 };
 

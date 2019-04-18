@@ -1,9 +1,10 @@
-
 // SIMEN SEM OEVERENG
-
 
 #ifndef CLASSIFICATION_HEADER
 #define CLASSIFICATION_HEADER
+
+#include <string>
+using namespace std;
 
 // TODO: NEW
 class Classification{
@@ -17,6 +18,7 @@ class Classification{
       bool operator< (const Classification& p) const {return(m_prob<p.m_prob);}
       int getLabel()    {return m_label;};
       double getProb()  {return m_prob; };
+      string printClassification();
 
       void setLabel(int l)    {m_label = l;};
       void setProb(double p)  {m_prob  = p;};
@@ -26,6 +28,4 @@ class Classification{
       bool m_hazard;   // or string classification;
       double m_prob;
 };
-
-
 #endif 
