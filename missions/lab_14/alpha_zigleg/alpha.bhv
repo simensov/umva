@@ -74,16 +74,18 @@ Behavior=BHV_ConstantSpeed
 }
 
 
-Behavior=BHV_Pulse
+Behavior=BHV_ZigLeg
 {
-    name       = pulse
-    pwt        = 100
-    condition = RETURN = false
-    condition = DEPLOY = true
-    perpetual = false
-    updates = PULSE_UPDATES 
+    name       = zigleg
+    pwt        = 300
+    condition  = RETURN = false
+    condition  = DEPLOY = true
+    perpetual  = false
+    updates    = ZIGLEG_UPDATES 
 
     pulse_range     = 20
     pulse_duration  = 4
-}
 
+    zigleg_offset   = 40
+    zigleg_duration = 7
+}
