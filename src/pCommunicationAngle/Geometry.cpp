@@ -67,11 +67,11 @@ void Line::setAngle(){
       if(dx < 0){     // second point is BEHIND first (third quad)
         m_theta = M_PI + atan(dz / dx);
       } else {        // second point is in FRONT, but not as deep (4. quad)
-        m_theta = 2*M_PI - atan(abs(dz) / abs(dx));
+        m_theta = 2*M_PI - atan(fabs(dz) / fabs(dx));
       }
     } else {
       if(dx < 0){     // 2. quad
-        m_theta = M_PI - atan(abs(dz) / abs(dx));
+        m_theta = M_PI - atan(fabs(dz) / fabs(dx));
       } else {        // everyting is positive - first quadrant
         m_theta = atan(dz / dx);
       }
@@ -110,7 +110,7 @@ Point Line::midpoint() const {
 Point Line::circleCenter(double z_end) const {
   Point midpt = midpoint();
   // m_theta has been calculated to be strictly positive
-  double dx = tan(m_theta) * ( midpt.getZ() + abs(z_end));
+  double dx = tan(m_theta) * ( midpt.getZ() + fabs(z_end));
   Point p2( midpt.getX() + dx, z_end);
   return(p2);
 }

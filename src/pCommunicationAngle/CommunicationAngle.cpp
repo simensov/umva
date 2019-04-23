@@ -201,7 +201,7 @@ double CommunicationAngle::transmissionLoss() const
     double J = (r1/sin(theta_c))*((r2 - r1)/d_theta);
 
     // Calculates the pressure loss
-    double ps = (0.25*M_PI)*sqrt(abs((cos(m_theta0) * c_collaborator)/(c_vehicle*J)));
+    double ps = (0.25*M_PI)*sqrt(fabs((cos(m_theta0) * c_collaborator)/(c_vehicle*J)));
     double p1 = (0.25*M_PI);
 
     // Returns the transmission loss
