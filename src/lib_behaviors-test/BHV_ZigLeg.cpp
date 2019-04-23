@@ -42,7 +42,7 @@ BHV_ZigLeg::BHV_ZigLeg(IvPDomain domain) :
   m_nav_y = 0;
   m_nav_h = 0;
 
-  m_waypoint_time = 0;
+  m_waypoint_time = -0.01;
   m_waypoint_index = -1; // initialized to control for first index update in onRunState()
 
   m_pulse_x = 0;
@@ -216,28 +216,29 @@ IvPFunction* BHV_ZigLeg::onRunState()
 
   // Find time since last waypt has been UPDATED, since last zigleg has been posted, and since last waypt has been ENCOUNTERED
   double timeSinceWptUpdate = getBufferTimeVal("FOO"); // Always 0 or Appstick
-  double timeSinceZigLeg = getBufferCurrTime() - m_zigleg_time;
-  double timeSinceLastWpt = getBufferCurrTime() - m_waypoint_time;
+  double timeSinceZigLeg    = getBufferCurrTime() - m_zigleg_time;
+  double timeSinceLastWpt   = getBufferCurrTime() - m_waypoint_time;
 
   // If we have just hit a waypt, FOO has been posted. Time is stored, and variables updated according to next moves
   if(timeSinceWptUpdate == 0){
-    m_waypoint_time = getBufferCurrTime();
-    m_pulse_sent = false;
-    m_zigleg_sent = false;
-    m_objective_function = false;
+    m_waypoint_time       = getBufferCurrTime();
+    m_pulse_sent          = false;
+    m_zigleg_sent         = false;
+    m_objective_function  = false;
   }
   else if( m_zigleg_sent && (timeSinceZigLeg > m_zigleg_duration) ){
     // We have performed a zigleg m_zigleg_duration seconds ago.
-    m_objective_function = false; // Turn off objective function
+    m_objective_function  = false; // Turn off objective function
   }
-  else if( timeSinceLastWpt > 5 && !m_zigleg_sent){
-    // Waypt was crossed 5 seconds ago, and zigleg is not yet sent. 
+  else if( timeSinceLastWpt > 5 && !m_zigleg_sent && m_waypoint_time != -0.01){
+    // Waypt was crossed 5 seconds ago, and zigleg is not yet sent and
+    // we have changed the waypoint time from the initialized value 
     // Store times and heading, and update decision parameters.
-    m_pulse_time = getBufferCurrTime() + 0.1;
-    m_zigleg_time = getBufferCurrTime() + 0.1;
-    m_zigleg_heading = m_nav_h;
-    m_zigleg_sent = true;
-    m_objective_function = true;
+    m_pulse_time          = getBufferCurrTime() + 0.1;
+    m_zigleg_time         = getBufferCurrTime() + 0.1;
+    m_zigleg_heading      = m_nav_h;
+    m_zigleg_sent         = true;
+    m_objective_function  = true;
   }
 
   // Decide which objective function to returned based on decision parameter
@@ -248,6 +249,7 @@ IvPFunction* BHV_ZigLeg::onRunState()
   return(ipf);
 }
 
+// Based on the first part of lab. Kept for later reference
 void BHV_ZigLeg::postRangePulse(){
   XYRangePulse pulse;
   pulse.set_x(m_nav_x);
@@ -265,7 +267,11 @@ void BHV_ZigLeg::postRangePulse(){
 
 //-----------------------------------------------------------
 // Procedure: buildFunctionWithZAIC
-
+// Purpose:   Builds an objective function to be used for sailing on a certain
+//            heading away from a designated heading from Waypoint behaviour
+// Params:    no input
+// Edits:     no edits
+// Returns:   an IvPFunction, used in OnRunState()
 IvPFunction *BHV_ZigLeg::buildFunctionWithZAIC() 
 {
   double offset = m_zigleg_heading + m_zigleg_offset;
