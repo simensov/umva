@@ -312,14 +312,14 @@ void BHV_GradTrack::followGradient(){
     // We are using the 
     if(m_last_temps[0] > m_global_temp_avg + m_temp_threshold){
       // turn towards colder
-      postMessage("HEADING_ADJUST", m_nav_h - 2);
+      postMessage("CONST_HDG_UPDATES", m_nav_h - 2);
     }
     else if (m_last_temps[0] < m_global_temp_avg - m_temp_threshold) {
       // turn toward warmer
-      postMessage("HEADING_ADJUST", m_nav_h + 2);
+      postMessage("CONST_HDG_UPDATES", m_nav_h + 2);
     } 
     else{
-      postMessage("HEADING_ADJUST", m_nav_h);
+      postMessage("CONST_HDG_UPDATES", m_nav_h);
     }// if elseif else global temp avg
     
   } // else localtempavg

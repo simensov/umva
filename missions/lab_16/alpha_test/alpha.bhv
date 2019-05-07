@@ -1,0 +1,66 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = RETURNING{
+  DEPLOY = true
+  RETURN = true
+}
+
+//----------------------------------------------
+Behavior=BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = MODE==RETURNING
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+  endflag    = MISSION = complete
+
+           speed = 2.0
+  capture_radius = 2.0
+     slip_radius = 8.0
+          points = 0,0
+}
+
+Behavior = BHV_ConstantHeading
+{
+ // General Behavior Parameters
+ // ---------------------------
+ name         = const_hdg            
+ pwt          = 100                  
+ condition    = MODE==ACTIVE    
+ updates      = CONST_HDG_UPDATES    
+
+ // Parameters specific to this behavior
+ // ------------------------------------
+            basewidth = 10           
+             duration = no-time-limit 
+              heading = 270           
+ heading_mismatch_var = HDG_DIFF     
+            peakwidth = 10           
+          summitdelta = 25           
+}
+
+ Behavior = BHV_ConstantSpeed
+ {
+   // General Behavior Parameters
+   // ---------------------------
+   name         = const_spd_transit  
+   pwt          = 120                
+   condition    = MODE==ACTIVE   
+   updates      = CONST_SPD_UPDATES  
+
+   // Parameters specific to this behavior
+   // ------------------------------------
+            basewidth = 0.2          
+             duration = no-time-limit         
+                speed = 2.0            
+   speed_mismatch_var = SPEED_DIFF   
+            peakwidth = 0            
+          summitdelta = 0            
+ }
