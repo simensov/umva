@@ -1,20 +1,21 @@
 /************************************************************/
 /*    NAME: Simen Sem Oevereng                                              */
 /*    ORGN: MIT                                             */
-/*    FILE: BHV_ZigLeg.h                                      */
+/*    FILE: BHV_GradTrack.h                                      */
 /*    DATE:                                                 */
 /************************************************************/
 
-#ifndef ZigLeg_HEADER
-#define ZigLeg_HEADER
+#ifndef GradTrack_HEADER
+#define GradTrack_HEADER
 
 #include <string>
+#include <vector>
 #include "IvPBehavior.h"
 
-class BHV_ZigLeg : public IvPBehavior {
+class BHV_GradTrack : public IvPBehavior {
 public:
-  BHV_ZigLeg(IvPDomain);
-  ~BHV_ZigLeg() {};
+  BHV_GradTrack(IvPDomain);
+  ~BHV_GradTrack() {};
 
   bool         setParam(std::string, std::string);
   void         onSetParamComplete();
@@ -30,6 +31,10 @@ protected: // Local Utility functions
   void postRangePulse();
   IvPFunction* buildFunctionWithZAIC();
 
+  double measurementToTemp(string s);
+  void followGradient();
+  void updateTempAvg();
+
 protected: // Configuration parameters
 
 protected: // State variables
@@ -37,6 +42,13 @@ protected: // State variables
   double m_nav_x;
   double m_nav_y;
   double m_nav_h;
+
+  // Store x number of previous measurements. Is initialized
+  std::vector<double> m_last_temps;
+  double m_temp_threshold;
+  double m_measured_temp_avg;
+  double m_global_temp_avg;
+  double m_global_front_gradient;
 
   // Time since last waypt hit and the next waypt's index
   double m_waypoint_time;
@@ -63,6 +75,6 @@ protected: // State variables
 
 extern "C" {
   IVP_EXPORT_FUNCTION IvPBehavior * createBehavior(std::string name, IvPDomain domain) 
-  {return new BHV_ZigLeg(domain);}
+  {return new BHV_GradTrack(domain);}
 }
 #endif

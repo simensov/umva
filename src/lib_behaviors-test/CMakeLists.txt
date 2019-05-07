@@ -78,3 +78,20 @@ TARGET_LINK_LIBRARIES(BHV_ZigLeg
    mbutil 
    geometry 
    ${SYSTEM_LIBS} )
+
+
+#--------------------------------------------------------
+#                                      BHV_GradTrack
+#--------------------------------------------------------
+ADD_LIBRARY(BHV_GradTrack SHARED 
+   BHV_GradTrack.cpp)
+TARGET_LINK_LIBRARIES(BHV_GradTrack
+   helmivp
+   behaviors 
+   ivpbuild 
+   logic 
+   ivpcore 
+   bhvutil 
+   mbutil 
+   geometry 
+   ${SYSTEM_LIBS} )
