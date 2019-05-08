@@ -1,20 +1,39 @@
 initialize   DEPLOY = false
 initialize   RETURN = false
+initialize   TRACK  = true
+initialize   SURVEY = false
 
 set MODE = ACTIVE {
   DEPLOY = true
 } INACTIVE
 
 set MODE = RETURNING{
-  DEPLOY = true
+  MODE = ACTIVE
   RETURN = true
+}
+
+// Example of relevant tree structure. Or make a parent tree to these two
+//set MODE = SURVEYING{
+//  MODE = ACTIVE
+//  RETURN = false
+//  SURVEY = true
+//}
+//
+//set MODE = TRACKING{
+//  MODE = ACTIVE:SURVEYING
+//  TRACK = true
+//}
+
+set MODE = TRACKING{
+  MODE = ACTIVE
+  TRACK = true
 }
 
 //----------------------------------------------
 Behavior=BHV_Waypoint
 {
   name       = waypt_return
-  pwt        = 100
+  pwt        = 200
   condition  = MODE==RETURNING
   perpetual  = true
   endflag    = RETURN = false
@@ -33,14 +52,14 @@ Behavior = BHV_ConstantHeading
  // ---------------------------
  name         = const_hdg            
  pwt          = 100                  
- condition    = MODE==ACTIVE    
+ condition    = MODE==TRACKING    
  updates      = CONST_HDG_UPDATES    
 
  // Parameters specific to this behavior
  // ------------------------------------
             basewidth = 10           
              duration = no-time-limit 
-              heading = 270           
+              heading = 145           
  heading_mismatch_var = HDG_DIFF     
             peakwidth = 10           
           summitdelta = 25           
@@ -52,15 +71,46 @@ Behavior = BHV_ConstantHeading
    // ---------------------------
    name         = const_spd_transit  
    pwt          = 120                
-   condition    = MODE==ACTIVE   
+   condition    = MODE==TRACKING   
    updates      = CONST_SPD_UPDATES  
 
    // Parameters specific to this behavior
    // ------------------------------------
             basewidth = 0.2          
              duration = no-time-limit         
-                speed = 2.0            
+                speed = 1.0           
    speed_mismatch_var = SPEED_DIFF   
             peakwidth = 0            
           summitdelta = 0            
  }
+
+// has been tested to work in zigleg-mission just after the app had been copied from the zigleg format
+
+Behavior=BHV_GradTrack
+{
+    name       = gradtrack
+    pwt        = 300
+    condition  = MODE==TRACKING
+    perpetual  = false
+    updates    = GRADTRACK_UPDATES 
+
+    pulse_range     = 20
+    pulse_duration  = 4
+    zigleg_offset   = 40
+    zigleg_duration = 7
+}
+
+
+//Behavior=BHV_GradTrack
+//{
+//    name       = gradtrack
+//    pwt        = 300
+//    condition  = MODE==TRACKING
+//    perpetual  = false
+//    updates    = GRADTRACK_UPDATES 
+//
+//    pulse_range     = 20
+//    pulse_duration  = 4
+//    zigleg_offset   = 40
+//    zigleg_duration = 7
+//}

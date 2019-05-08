@@ -25,6 +25,7 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
+  Run = uTimerScript    @ NewConsole = false
 }
 
 //------------------------------------------
@@ -182,3 +183,21 @@ ProcessConfig = pNodeReporter
   platform_type   = KAYAK
   platform_length = 4
 }
+
+
+//------------------------------------------
+ProcessConfig = uTimerScript                                    
+{                 
+  // paused = true // TODO: change?                            
+  rand_var = varname=RND_TEMP, min=15, max=25, key=at_post
+ 
+  event = var=AVERAGE_TEMP, val=20, time=10
+  event = var=UCTD_MSMNT_REPORT, val="vname=v_name,utc=123.0,x=123.2,y=412.2,temp=$[RND_TEMP]", time=100
+  event = var=UCTD_MSMNT_REPORT, val="vname=v_name,utc=123.0,x=123.2,y=412.2,temp=$[RND_TEMP]", time=150
+
+  event = var=UCTD_MSMNT_REPORT, val="vname=v_name,utc=123.0,x=123.2,y=412.2,temp=$[RND_TEMP]", time=200
+
+  event = var=UCTD_MSMNT_REPORT, val="vname=v_name,utc=123.0,x=123.2,y=412.2,temp=$[RND_TEMP]", time=250
+
+  event = var=UCTD_MSMNT_REPORT, val="vname=v_name,utc=123.0,x=123.2,y=412.2,temp=$[RND_TEMP]", time=300
+} 

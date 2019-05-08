@@ -34,6 +34,7 @@ protected: // Local Utility functions
   double measurementToTemp(string s);
   void followGradient();
   void updateTempAvg();
+  void postTurnDir(double change);
 
 protected: // Configuration parameters
 
@@ -49,6 +50,9 @@ protected: // State variables
   double m_measured_temp_avg;
   double m_global_temp_avg;
   double m_global_front_gradient;
+  int m_cold_direction;
+  double m_turn_rate;
+  bool m_started;
 
   // Time since last waypt hit and the next waypt's index
   double m_waypoint_time;
