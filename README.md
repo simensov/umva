@@ -1,4 +1,4 @@
-## Work from 2.680 labs and project
+## Work from 2.680 labs and project :speedboat:
 
 Coding in C++.
 Using MOOS-IvP modules:
@@ -6,6 +6,8 @@ Using MOOS-IvP modules:
   "MOOS-IvP is a set of open source C++ modules for providing autonomy on robotic platforms, in particular autonomous marine vehicles."
 
 - http://oceanai.mit.edu/moos-ivp/pmwiki/pmwiki.php?n=Main.HomePage
+
+(None of the lists below are complete as I stopped updating the readme towards the end of the course)
 
 MOOS applications created:
   - pOdometry
